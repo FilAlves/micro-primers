@@ -1,0 +1,29 @@
+# This is a configurations file for micro-primers pipeline. 
+# Here you can set the parameteres necessary for runing micro-primers. 
+# 
+# You can set the options for:
+# Input files;
+# Cutadapt adapters;
+# Minimum length for the region flanking the microsssatelite (SSR);
+# Minimum size of ssr pattern;
+# Type of ssr to exclude (c & c*- Compost, p1 - 1 letter ssr, etc.)
+# Minimum of selected ssr (if number is under the minimal value, a special mode will be perfomed)
+
+#Input files
+
+INPUT_FILES_R1=Bugios_R1.fastq
+INPUT_FILES_R2=Bugios_R2.fastq
+
+
+#CUTADAPT
+
+CUTADAPT_3=CCAAGCTTCCCGGGTACCGC
+CUTADAPT_5=GCGGTACCCGGGAAGCTTGG
+
+
+#SSR
+
+MIN_SSR_LEN=50
+MIN_SSR_REP=5
+EXC_SSR=c,c*,p1
+MIN_SEL_SSR=25

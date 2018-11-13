@@ -58,7 +58,6 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
                 outfile.write("\t".join(good_micros))
                 outfile2.write("\t".join(selected_line))
 
-
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
     outfile.write("\n")
 
@@ -70,7 +69,7 @@ def length_merger(rf_csv, rf_length, of):
     #Creating dicitonary with SeqID and ssr length
     dic_length = {}
 
-    # Dictionary creations
+    # Dictionary writing
     for line in readfile_length:
 
         #Spliting file by tabs

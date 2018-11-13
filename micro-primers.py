@@ -3,7 +3,7 @@ import os
 #Create empty file for importing python scripts
 os.system("touch software/scripts/__init__.py")
 
-from software.scripts import picker, config, ids, order
+from software.scripts import picker, config, formarter, pre_primer
 
 #Reading settings
 settings = config.config("config.txt")
@@ -47,10 +47,10 @@ def grep():
 
 #Change id's and Length Calculation for later selection of valid microsatellites
 def ids_and_len():
-    os.system("echo 'Changing ids...'")
+    os.system("echo 'Changing formarter...'")
     os.system("echo 'Calculating sequences lengths...'")
-    ids.change_ids_and_calc_len(".temp/grep_out.fasta", ".temp/ids_out.fasta", ".temp/length_calc_out.fasta")
-    #os.system("perl software/scripts/changeids.pl .temp/grep_out.fasta")
+    formarter.change_ids_and_calc_len(".temp/grep_out.fasta", ".temp/ids_out.fasta", ".temp/length_calc_out.fasta")
+    #os.system("perl software/scripts/changeformarter.pl .temp/grep_out.fasta")
 
 #Search Microssatelites
 def misa():
@@ -60,7 +60,7 @@ def misa():
 #Adds length to end of the sequences to misa output
 def length_add():
     os.system("echo 'Adding length to misa output...'")
-    picker.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
+    formarter.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
 
 #Selection of microssatelites with enough space for primer
 def good_micros(dist, rep, exclude):
@@ -71,7 +71,7 @@ def good_micros(dist, rep, exclude):
 #Extraction of the microsatellite sequence from allignement of fragments with flanking regions
 def splitSSR():
     os.system("echo 'splitSSR working...'")
-    ids.split(".temp/good_micros_out.fasta", ".temp/ids_out.fasta", ".temp/split_out.fasta")
+    formarter.split(".temp/good_micros_out.fasta", ".temp/ids_out.fasta", ".temp/split_out.fasta")
     #os.system("perl software/scripts/splitSSR.pl .temp/ids_out.fasta .temp/good_micros_out.fasta")
 
 #Removal of Redundacy
@@ -82,12 +82,12 @@ def cdhit():
 #Cluster assignement
 def cluster():
     os.system("echo 'Calculating number of sequences for each cluster...'")
-    ids.cluster(".temp/cdhit_out.txt.clstr", ".temp/clusters_out.txt")
+    formarter.cluster(".temp/cdhit_out.txt.clstr", ".temp/clusters_out.txt")
 
 #Adding cluster information to Microssatelites table
 def cluster_info():
     os.system("echo 'Adding information to the table of microsatellites...'")
-    order.order(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
+    formarter.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
 # Selecting one sequence per cluster
 def selected_micros():
@@ -97,7 +97,7 @@ def selected_micros():
 #Creating input file for Primer3
 def create_pseudofasta():
     os.system("echo 'Creating Primer3 input file...'")
-    order.template(".temp/selected_micros_seqs.txt", ".temp/ids_out.fasta", ".temp/pseudo_out.fasta")
+    pre_primer.pseudofasta(".temp/selected_micros_seqs.txt", ".temp/ids_out.fasta", ".temp/pseudo_out.fasta")
 
 #Primer design and creation
 def primer3():

@@ -60,31 +60,3 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
 
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
     outfile.write("\n")
-
-def length_merger(rf_csv, rf_length, of):
-    readfile_csv = open(rf_csv, "r")
-    readfile_length = open(rf_length, "r")
-    outfile = open(of,"w")
-
-    #Creating dicitonary with SeqID and ssr length
-    dic_length = {}
-
-    # Dictionary writing
-    for line in readfile_length:
-
-        #Spliting file by tabs
-        selected_line = line.split("\t")
-
-        #Saving only 10 first caracters of ID.
-        dic_length[selected_line[0][0:10]] = selected_line[1]
-
-    for line in readfile_csv:
-        selected_line = line.split("\t")
-
-        #Removing \n from end tab
-        selected_line[6] = selected_line[6].rstrip()
-
-        #Creating new tab with ssr length
-        if selected_line[0][0:10] in dic_length.keys():
-            selected_line.append(dic_length[selected_line[0][0:10]])
-            outfile.write("\t".join(selected_line))

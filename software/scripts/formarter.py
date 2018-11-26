@@ -188,16 +188,3 @@ def length_merger(rf_csv, rf_length, of):
         if selected_line[0][0:10] in dic_length.keys():
             selected_line.append(dic_length[selected_line[0][0:10]])
             outfile.write("\t".join(selected_line))
-
-        #StopIteneration()
-    #for keys,values in dic_micros.items():
-        #print (values)
-
-#len_add(".temp/length_calc_out.fasta", ".temp/misa_out.misa", ".temp/length_add_out.misa")
-#split(".temp/good_micros_out.fasta", ".temp/ids_out.fasta", ".temp/split_out.fasta" )
-#cluster(".temp/cdhit_out.txt.clstr", ".temp/teste.txt")
-
-
-
-#for keys,values in dic_size.items():
-#    print (values)

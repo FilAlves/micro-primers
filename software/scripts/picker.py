@@ -61,7 +61,7 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
     outfile.write("\n")
 
-def allels(rf1, of1, MIN_SEL_SRR):
+def allels(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL):
 
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
@@ -95,12 +95,19 @@ def allels(rf1, of1, MIN_SEL_SRR):
             junk, allels_size = values[1].split(")")
 
             #adding unique allels to list
-            if allels_size not in allels_list:
-                allels_list.append(allels_size)
+            if MIN_SEL_SRR_SPECIAL == 0:
+                if allels_size not in allels_list:
+                    allels_list.append(allels_size)
+            else:
+                allels_list.append(int(allels_size))
 
         #Selecting cluster for exclusion
-        if len(allels_list) < MIN_SEL_SRR:
-            cluster_exclude.append(cluster_num)
+        if MIN_SEL_SRR_SPECIAL == 0:
+            if len(allels_list) < MIN_SEL_SRR:
+                cluster_exclude.append(cluster_num)
+        else:
+            if max(allels_list) - min(allels_list) < 6:
+                cluster_exclude.append(cluster_num)
 
     #Reseting file cursor
     readfile1.seek(0)

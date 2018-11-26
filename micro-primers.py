@@ -89,8 +89,8 @@ def cluster_info():
     os.system("echo 'Adding information to the table of microsatellites...'")
     formarter.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
-def cluster_filter(MIN_SEL_SRR):
-    picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR)
+def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL):
+    picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL)
 
 # Selecting one sequence per cluster
 def selected_micros():
@@ -130,7 +130,7 @@ splitSSR()
 cdhit()
 cluster()
 cluster_info()
-cluster_filter(int(settings[7]))
+cluster_filter(int(settings[7]), int(settings[8]))
 selected_micros()
 create_pseudofasta()
 primer3()

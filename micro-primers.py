@@ -100,7 +100,7 @@ def selected_micros():
 #Creating input file for Primer3
 def create_pseudofasta():
     os.system("echo 'Creating Primer3 input file...'")
-    pre_primer.pseudofasta(".temp/selected_micros_seqs.txt", ".temp/ids_out.fasta", ".temp/pseudo_out.fasta")
+    pre_primer.pseudofasta(".temp/selected_micros_out_seqs.txt", ".temp/ids_out.fasta", ".temp/pseudo_out.fasta")
 
 #Primer design and creation
 def primer3():
@@ -111,7 +111,7 @@ def primer3():
 #Selection of primers following laboratory criteria
 def select():
     os.system("echo 'Selecting best primers...'")
-    os.system("perl software/scripts/select_oligos.pl .temp/micros_selected_long.primers .temp/selected_micros_tabs.txt > logs/select_log.txt")
+    os.system("perl software/scripts/select_oligos.pl .temp/micros_selected_long.primers .temp/selected_micros_out_tabs.txt > logs/select_log.txt")
 
 #Removal of .temp directory
 def junk():

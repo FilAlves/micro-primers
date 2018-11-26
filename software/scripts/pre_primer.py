@@ -1,5 +1,5 @@
 
-def template(rf1, rf2, of1):
+def pseudofasta(rf1, rf2, of1):
 
     readfile1 = open(rf1, "r")
     readfile2 = open(rf2, "r")
@@ -30,4 +30,4 @@ def final_primers(rf1, of1):
             print(id)
 
 
-final_primers(".temp/micros_selected_long.primers" ".temp/selected_micros_tabs.txt")
+#final_primers(".temp/micros_selected_long.primers", ".temp/selected_micros_tabs.txt")

@@ -23,7 +23,7 @@ def trimmomatic(R1, R2):
         "%s %s "
         ".temp/trim_out_trimmed_R1.fastq .temp/trim_out_unpaired_R1.fastq "
         ".temp/trim_out_trimmed_R2.fastq .temp/trim_out_unpaired_R2.fastq "
-        "ILLUMINACLIP:/home/filalves/projecto/software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10 "
+        "ILLUMINACLIP:./software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10 "
         "LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 2> logs/trim_log.txt"
         %(R1, R2)
         )
@@ -89,10 +89,13 @@ def cluster_info():
     os.system("echo 'Adding information to the table of microsatellites...'")
     formarter.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
+def cluster_filter(MIN_SEL_SRR):
+    picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR)
+
 # Selecting one sequence per cluster
 def selected_micros():
     os.system("echo 'Selecting one sequence per cluster...'")
-    picker.selected_micros(".temp/cluster_info_out.txt", ".temp/selected_micros_seqs.txt", ".temp/selected_micros_tabs.txt")
+    picker.selected_micros(".temp/cluster_filter_out.txt", ".temp/selected_micros_out_seqs.txt", ".temp/selected_micros_out_tabs.txt")
 
 #Creating input file for Primer3
 def create_pseudofasta():
@@ -127,6 +130,7 @@ splitSSR()
 cdhit()
 cluster()
 cluster_info()
+cluster_filter(int(settings[7]))
 selected_micros()
 create_pseudofasta()
 primer3()

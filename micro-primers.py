@@ -135,7 +135,7 @@ selected_micros()
 create_pseudofasta()
 primer3()
 select()
-#junk()"""
+#junk()
 
 os.system("echo 'Done!'")
 

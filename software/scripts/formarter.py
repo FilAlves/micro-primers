@@ -65,34 +65,55 @@ def split(rf1, rf2, of1):
     readfile2 = open(rf2, "r")
     outfile1 = open(of1, "w")
 
-    #Criating Dictionary containing ID, start and end of SSR
+    #Save last sequnce ID
+    last_seq = ""
+
+    #Save last DNA Sequence
+    prev_line = ""
+
+    #Criating Dictionary containing Number ID, Sequence ID, start and end of SSR
     dic_micros = {}
 
     for line in readfile1:
         selected_line = line.split("\t")
         if len(selected_line) > 1:
-            dic_micros[selected_line[0][0:10]] = [selected_line[1], selected_line[2]]
+            dic_micros[selected_line[0]] = [selected_line[1][0:10], selected_line[2], selected_line[3]]
 
     # Search and cut of SSR in selected Sequences
     for line in readfile2:
         selected_line = line.split("\t")
 
-        #Dictionary search
-        if selected_line[0][1:11] in dic_micros:
-            #Selection of the next line, containing the DNA sequence
-            nextline = readfile2.readline()
+        for key in dic_micros:
 
-            #Defining start and end of SSR
-            first_cut = int(dic_micros.get(selected_line[0][1:11])[0])
-            second_cut = int(dic_micros.get(selected_line[0][1:11])[1]) + 1
+            if selected_line[0][1:11] in str(dic_micros[key][0]):
 
-            #Slicing away SSR
-            nextline = nextline[0 : first_cut] + nextline[second_cut: ]
+                #Selecting Sequence ID
+                if selected_line[0][0] == ">":
 
-            #Output writing
-            outfile1.write(selected_line[0])
-            outfile1.write(nextline)
+                    #If there is multiple SSR's the DNA Seq is saved
+                    if last_seq == selected_line[0][1:11]:
+                        nextline = prev_line
+                        last_seq = ""
 
+                    else:
+                        #Selection of the next line, containing the DNA sequence
+                        nextline = readfile2.readline()
+
+                        prev_line = nextline
+                    #Defining start and end of SSR
+                    first_cut = int(dic_micros.get(key)[1]) - 1
+                    second_cut = int(dic_micros.get(key)[2])
+
+                    #Slicing away SSR
+                    nextline = nextline[0 : first_cut] + nextline[second_cut: ]
+
+                    #Output writing
+                    outfile1.write(selected_line[0])
+                    outfile1.write(nextline)
+
+                #Saving last sequence ID:
+                if selected_line[0][0] == ">":
+                    last_seq = selected_line[0][1:11]
 
 def cluster(rf1, of1):
     readfile1 = open(rf1, "r")

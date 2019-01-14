@@ -37,6 +37,7 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
     #Types of ssr to exclude from further search
     exclude_ssr = exclude
 
+    id = 1
 
     for line in readfile:
         #Split by tab
@@ -53,10 +54,13 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
             selected_line[0] = "".join(remove_under)
 
             # Selecting only sequences that have at least 50 bases before and after the SSR
+
             if int(selected_line[7]) - int(selected_line[6]) >= min_ext_dist and int(selected_line[5]) >= min_ext_dist:
-                good_micros = list( selected_line[i] for i in [0, 5, 6, 7])
+                good_micros = list(selected_line[i] for i in [0, 5, 6, 7])
+                good_micros = [str(id)] + good_micros 
                 outfile.write("\t".join(good_micros))
                 outfile2.write("\t".join(selected_line))
+                id += 1
 
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
     outfile.write("\n")

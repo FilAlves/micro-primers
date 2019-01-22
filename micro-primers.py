@@ -1,4 +1,5 @@
 import os
+import sys
 
 #Create empty file for importing python scripts
 os.system("touch software/scripts/__init__.py")
@@ -89,7 +90,7 @@ def cluster_info():
     os.system("echo 'Adding information to the table of microsatellites...'")
     formarter.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
-def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL):
+def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
     picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL)
 
 # Selecting one sequence per cluster
@@ -102,11 +103,21 @@ def create_pseudofasta():
     os.system("echo 'Creating Primer3 input file...'")
     pre_primer.pseudofasta(".temp/selected_micros_out_seqs.txt", ".temp/ids_out.fasta", ".temp/pseudo_out.fasta")
 
+#Check if primer3 input is empty
+def size_check(SPECIAL_CASE):
+    if os.path.getsize(".temp/pseudo_out.fasta") < 1:
+        print("Empty primer3 input file. \n")
+        if SPECIAL_CASE == 0:
+            sys.exit("No valid SSR's were selected. Try using the special search.")
+        elif SPECIAL_CASE == 1:
+            sys.exit("No valid SSR's were selected.")
+
+
 #Primer design and creation
-def primer3():
+def primer3(p3_settings):
     os.system("echo 'Creating Primers...'")
-    os.system("software/primer3/src/./primer3_core -default_version=2 -p3_settings_file=CTM_settings_long.txt "
-              ".temp/pseudo_out.fasta -output=.temp/micros_selected_long.primers")
+    os.system("software/primer3/src/./primer3_core -default_version=2 -p3_settings_file=%s "
+              ".temp/pseudo_out.fasta -output=.temp/micros_selected_long.primers" %(p3_settings) )
 
 #Selection of primers following laboratory criteria
 def select():
@@ -118,7 +129,7 @@ def junk():
     os.system("rm -r .temp/")
 
 #Pipeline
-trimmomatic(settings[0], settings[1])
+"""trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()
 grep()
@@ -130,10 +141,11 @@ splitSSR()
 cdhit()
 cluster()
 cluster_info()
-cluster_filter(int(settings[7]), int(settings[8]))
+cluster_filter(int(settings[7]), int(settings[8]), int(settings[9]))
 selected_micros()
-create_pseudofasta()
-primer3()
+create_pseudofasta()"""
+size_check(int(settings[8]))
+primer3(settings[10])
 select()
 #junk()
 

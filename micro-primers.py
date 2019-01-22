@@ -129,7 +129,7 @@ def junk():
     os.system("rm -r .temp/")
 
 #Pipeline
-"""trimmomatic(settings[0], settings[1])
+trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()
 grep()
@@ -143,7 +143,7 @@ cluster()
 cluster_info()
 cluster_filter(int(settings[7]), int(settings[8]), int(settings[9]))
 selected_micros()
-create_pseudofasta()"""
+create_pseudofasta()
 size_check(int(settings[8]))
 primer3(settings[10])
 select()

@@ -91,7 +91,7 @@ def cluster_info():
     formarter.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
 def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
-    picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL)
+    picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF)
 
 # Selecting one sequence per cluster
 def selected_micros():

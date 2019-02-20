@@ -34,11 +34,6 @@ def final_primers(rf1, rf2, of1):
         selected_line = line.split("\t")
         dic_selected[selected_line[0]] = [selected_line[1], selected_line[2], selected_line[3]]
 
-    #for key, item in dic_selected.items():
-        #print(key, item)
-
-    id, size, left, left_tm, right, right_tm, motif = ["" for i in range(7)]
-
     for line in readfile2:
         line = line.rstrip()
         if re.match("^SEQUENCE_ID", line):
@@ -74,5 +69,3 @@ def final_primers(rf1, rf2, of1):
                     count = 1
                 else:
                     outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\n")
-
-final_primers("/home/filalves/micro-primers/.temp/selected_micros_out_tabs.txt", "/home/filalves/micro-primers/.temp/micros_selected_long.primers", "/home/filalves/micro-primers/.temp/tst.txt")

@@ -122,7 +122,7 @@ def primer3(p3_settings):
 #Selection of primers following laboratory criteria
 def select():
     os.system("echo 'Selecting best primers...'")
-    os.system("perl software/scripts/select_oligos.pl .temp/micros_selected_long.primers .temp/selected_micros_out_tabs.txt > logs/select_log.txt")
+    pre_primer.final_primers(".temp/selected_micros_out_tabs.txt", ".temp/micros_selected_long.primers", "final_primers.txt")
 
 #Removal of .temp directory
 def junk():

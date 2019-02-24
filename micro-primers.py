@@ -4,7 +4,7 @@ import sys
 #Create empty file for importing python scripts
 os.system("touch software/scripts/__init__.py")
 
-from software.scripts import picker, config, formarter, pre_primer
+from software.scripts import picker, config, text_manip, pre_primer
 
 #Reading settings
 settings = config.config("config.txt")
@@ -48,10 +48,9 @@ def grep():
 
 #Change id's and Length Calculation for later selection of valid microsatellites
 def ids_and_len():
-    os.system("echo 'Changing formarter...'")
+    os.system("echo 'Changing text_manip...'")
     os.system("echo 'Calculating sequences lengths...'")
-    formarter.change_ids_and_calc_len(".temp/grep_out.fasta", ".temp/ids_out.fasta", ".temp/length_calc_out.fasta")
-    #os.system("perl software/scripts/changeformarter.pl .temp/grep_out.fasta")
+    text_manip.change_ids_and_calc_len(".temp/grep_out.fasta", ".temp/ids_out.fasta", ".temp/length_calc_out.fasta")
 
 #Search Microssatelites
 def misa():
@@ -61,7 +60,7 @@ def misa():
 #Adds length to end of the sequences to misa output
 def length_add():
     os.system("echo 'Adding length to misa output...'")
-    formarter.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
+    text_manip.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
 
 #Selection of microssatelites with enough space for primer
 def good_micros(dist, rep, exclude):
@@ -72,8 +71,7 @@ def good_micros(dist, rep, exclude):
 #Extraction of the microsatellite sequence from allignement of fragments with flanking regions
 def splitSSR():
     os.system("echo 'splitSSR working...'")
-    formarter.split(".temp/good_micros_out.fasta", ".temp/ids_out.fasta", ".temp/split_out.fasta")
-    #os.system("perl software/scripts/splitSSR.pl .temp/ids_out.fasta .temp/good_micros_out.fasta")
+    text_manip.split(".temp/good_micros_out.fasta", ".temp/ids_out.fasta", ".temp/split_out.fasta")
 
 #Removal of Redundacy
 def cdhit():
@@ -83,12 +81,12 @@ def cdhit():
 #Cluster assignement
 def cluster():
     os.system("echo 'Calculating number of sequences for each cluster...'")
-    formarter.cluster(".temp/cdhit_out.txt.clstr", ".temp/clusters_out.txt")
+    text_manip.cluster(".temp/cdhit_out.txt.clstr", ".temp/clusters_out.txt")
 
 #Adding cluster information to Microssatelites table
 def cluster_info():
     os.system("echo 'Adding information to the table of microsatellites...'")
-    formarter.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
+    text_manip.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
 def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
     picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF)

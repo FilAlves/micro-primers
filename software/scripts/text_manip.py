@@ -39,27 +39,6 @@ def change_ids_and_calc_len(rf1, of1, of2):
             len_line = len_line + "\t" + str(size)
             outfile2.write(len_line + "\n")
 
-
-
-def len_add(rf1, rf2, of1):
-    readfile1 = open(rf1, "r")
-    readfile2 = open(rf2, "r")
-    outfile1 = open(of1, "w")
-
-    dic_size = {}
-
-    for line in readfile1:
-        selected_line = line.split("\t")
-        dic_size[selected_line[0][0:10]] = selected_line[1]
-
-    for line in readfile2:
-        selected_line = line.split("\t")
-        if selected_line[0][0:10] in dic_size.keys():
-            selected_line[6] = selected_line[6].rstrip()
-            selected_line.append(dic_size[selected_line[0][0:10]])
-            outfile1.write("\t".join(selected_line))
-
-
 def split(rf1, rf2, of1):
     readfile1 = open(rf1, "r")
     readfile2 = open(rf2, "r")

@@ -15,7 +15,7 @@ def selected_micros(rf1, of_sel_micros, of_id_micros):
             dic_cluster[selected_line[9]] = selected_line[0]
 
             #Creating outfile with sequenceID, ssr, start and end positions of the ssr
-            selected_micros = list( selected_line[i] for i in [0, 3, 5, 6])
+            selected_micros = list( selected_line[i] for i in [0, 3, 5, 6, 8, 9])
             outfile2.write("\t".join(selected_micros) + "\n")
 
     #creating tab_selected

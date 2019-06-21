@@ -97,9 +97,9 @@ def selected_micros():
     picker.selected_micros(".temp/cluster_filter_out.txt", ".temp/selected_micros_out_seqs.txt", ".temp/selected_micros_out_tabs.txt")
 
 #Creating input file for Primer3
-def create_pseudofasta():
+def primer3_input():
     os.system("echo 'Creating Primer3 input file...'")
-    pre_primer.pseudofasta(".temp/selected_micros_out_seqs.txt", ".temp/ids_out.fasta", ".temp/pseudo_out.fasta")
+    pre_primer.pseudofasta(".temp/selected_micros_out_seqs.txt", ".temp/ids_out.fasta", ".temp/primer3_input_out.fasta")
 
 #Check if primer3 input is empty
 def size_check(SPECIAL_CASE):
@@ -115,12 +115,19 @@ def size_check(SPECIAL_CASE):
 def primer3(p3_settings):
     os.system("echo 'Creating Primers...'")
     os.system("software/primer3/src/./primer3_core -default_version=2 -p3_settings_file=%s "
-              ".temp/pseudo_out.fasta -output=.temp/micros_selected_long.primers" %(p3_settings) )
+              ".temp/primer3_input_out.fasta -output=.temp/primer3_out.primers" %(p3_settings) )
 
-#Selection of primers following laboratory criteria
-def select():
+def name(file_name):
+    output_name, junk = settings[0].split("_")
+    output_name += "_primers.txt"
+    return output_name
+
+
+#Selection of primers following laboratory criteria and output formatting
+def output():
     os.system("echo 'Selecting best primers...'")
-    pre_primer.final_primers(".temp/selected_micros_out_tabs.txt", ".temp/micros_selected_long.primers", "final_primers.txt")
+    os.system("echo 'Creating final file...'")
+    pre_primer.final_primers(".temp/selected_micros_out_tabs.txt", ".temp/primer3_out.primers", name(settings[0]) )
 
 #Removal of .temp directory
 def junk():
@@ -141,10 +148,10 @@ cluster()
 cluster_info()
 cluster_filter(int(settings[7]), int(settings[8]), int(settings[9]))
 selected_micros()
-create_pseudofasta()
+primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
-select()
+output()
 #junk()
 
 os.system("echo 'Done!'")

@@ -120,7 +120,7 @@ def primer3(p3_settings):
 
 #Defining output name
 def name(file_name):
-    output_name, junk = settings[0].split("_")
+    output_name, junk = file_name.split("_R")
     output_name += "_primers.txt"
     return output_name
 
@@ -135,7 +135,7 @@ def junk():
     os.system("rm -r .temp/")
 
 #Pipeline
-trimmomatic(settings[0], settings[1])
+"""trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()
 grep()
@@ -151,7 +151,7 @@ cluster_filter(int(settings[7]), int(settings[8]), int(settings[9]))
 selected_micros()
 primer3_input()
 size_check(int(settings[8]))
-primer3(settings[10])
+primer3(settings[10])"""
 output()
 #junk()
 

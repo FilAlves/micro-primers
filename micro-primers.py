@@ -117,11 +117,12 @@ def primer3(p3_settings):
     os.system("software/primer3/src/./primer3_core -default_version=2 -p3_settings_file=%s "
               ".temp/primer3_input_out.fasta -output=.temp/primer3_out.primers" %(p3_settings) )
 
+
+#Defining output name
 def name(file_name):
     output_name, junk = settings[0].split("_")
     output_name += "_primers.txt"
     return output_name
-
 
 #Selection of primers following laboratory criteria and output formatting
 def output():

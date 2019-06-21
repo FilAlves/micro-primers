@@ -28,7 +28,7 @@ def final_primers(rf1, rf2, of1):
     for line in readfile1:
         line = line.rstrip()
         selected_line = line.split("\t")
-        dic_selected[selected_line[0]] = [selected_line[1], selected_line[2], selected_line[3]]
+        dic_selected[selected_line[0]] = [selected_line[1], selected_line[2], selected_line[3], selected_line[4], selected_line[5]]
 
     for line in readfile2:
         line = line.rstrip()
@@ -55,13 +55,15 @@ def final_primers(rf1, rf2, of1):
             motif = dic_selected[id][0]
             start = int(dic_selected[id][1])
             end = int(dic_selected[id][2])
+            cluster = dic_selected[id][3]
+            cluster_size = dic_selected[id][4]
 
             good_left = int(left_ini) + int(left_len)
             good_right = int(right_ini) - int(right_len)
 
             if (good_left < start) and (good_right > end):
                 if count == 0:
-                    outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\t" + "| BEST |" + "\n")
+                    outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\t" + cluster_size + "\t" + "| BEST |" + "\n")
                     count = 1
                 else:
-                    outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\n")
+                    outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\t" + cluster_size + "\t" + "\n")

@@ -48,7 +48,7 @@ def split(rf1, rf2, of1):
     last_seq = ""
 
     #Save last DNA Sequence
-    prev_line = ""
+    dna_line = ""
 
     #Criating Dictionary containing Number ID, Sequence ID, start and end of SSR
     dic_micros = {}
@@ -71,14 +71,14 @@ def split(rf1, rf2, of1):
 
                     #If there is multiple SSR's the DNA Seq is saved
                     if last_seq == selected_line[0][1:11]:
-                        nextline = prev_line
+                        nextline = dna_line
                         last_seq = ""
 
                     else:
                         #Selection of the next line, containing the DNA sequence
                         nextline = readfile2.readline()
 
-                        prev_line = nextline
+                        dna_line = nextline
                     #Defining start and end of SSR
                     first_cut = int(dic_micros.get(key)[1]) - 1
                     second_cut = int(dic_micros.get(key)[2])

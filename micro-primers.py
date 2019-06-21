@@ -48,7 +48,7 @@ def grep():
 
 #Change id's and Length Calculation for later selection of valid microsatellites
 def ids_and_len():
-    os.system("echo 'Changing text_manip...'")
+    os.system("echo 'Adding ids...'")
     os.system("echo 'Calculating sequences lengths...'")
     text_manip.change_ids_and_calc_len(".temp/grep_out.fasta", ".temp/ids_out.fasta", ".temp/length_calc_out.fasta")
 

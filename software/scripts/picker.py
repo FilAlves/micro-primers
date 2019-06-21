@@ -43,7 +43,7 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
         #Split by tab
         selected_line = line.split("\t")
 
-        #Select line which do not contain c, c* and p1 type SSR
+        #Select line which do not contain the correct SSR motif type.
         if not selected_line[2] in exclude_ssr:
 
             #Remove second "_" from ID. It messes with splitSSR script.

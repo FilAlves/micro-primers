@@ -9,10 +9,7 @@ def pseudofasta(rf1, rf2, of1):
     selected_seqs = []
 
     for line in readfile1:
-        #line = line.rstrip()
         selected_seqs.append(line)
-
-    #print(selected_seqs)
 
     for line in readfile2:
         if line[0] == ">" :
@@ -26,7 +23,6 @@ def final_primers(rf1, rf2, of1):
     readfile2 = open(rf2, "r")
     outfile1 = open(of1, "w")
 
-    dic_primers = {}
     dic_selected = {}
 
     for line in readfile1:

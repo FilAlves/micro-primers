@@ -103,10 +103,10 @@ def primer3_input():
 
 #Check if primer3 input is empty
 def size_check(SPECIAL_CASE):
-    if os.path.getsize(".temp/pseudo_out.fasta") < 1:
+    if os.path.getsize(".temp/primer3_input_out.fasta") < 1:
         print("Empty primer3 input file. \n")
         if SPECIAL_CASE == 0:
-            sys.exit("No valid SSR's were selected. Try using the special search.")
+            sys.exit("No valid SSR's were selected. Try using broad search.")
         elif SPECIAL_CASE == 1:
             sys.exit("No valid SSR's were selected.")
 
@@ -135,7 +135,7 @@ def junk():
     os.system("rm -r .temp/")
 
 #Pipeline
-"""trimmomatic(settings[0], settings[1])
+trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()
 grep()
@@ -151,11 +151,8 @@ cluster_filter(int(settings[7]), int(settings[8]), int(settings[9]))
 selected_micros()
 primer3_input()
 size_check(int(settings[8]))
-primer3(settings[10])"""
+primer3(settings[10])
 output()
-#junk()
+junk()
 
 os.system("echo 'Done!'")
-
-
-#É preciso fazer make do CD-HIT, Primer3 e flash

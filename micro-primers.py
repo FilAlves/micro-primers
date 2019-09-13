@@ -89,7 +89,7 @@ def cluster_info():
     text_manip.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
 def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
-    picker.allels(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF)
+    picker.allel(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF)
 
 # Selecting one sequence per cluster
 def selected_micros():
@@ -153,6 +153,6 @@ primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
 output()
-junk()
+#junk()
 
 os.system("echo 'Done!'")

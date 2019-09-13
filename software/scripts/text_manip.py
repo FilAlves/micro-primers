@@ -156,10 +156,9 @@ def add_cluster_info(rf1, rf2, of1):
         #Appending to misa file cluster # and size
         for item in dic_cluster[id]:
             selected_line.append(item)
-        selected_line.append("\n")
 
         #Outfile writing
-        outfile1.write("\t".join(selected_line))
+        outfile1.write("\t".join(selected_line) + "\n")
 
 def length_merger(rf_csv, rf_length, of):
     readfile_csv = open(rf_csv, "r")

@@ -84,6 +84,7 @@ def allel(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
     #Dictionary for saving sequence id and allel for each cluster
     dic_allel = {}
     dic_fuck = {}
+    dic_shit = {}
 
     for line in readfile1:
 
@@ -103,8 +104,6 @@ def allel(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
 
         #List of every different allel for a given cluster
         dic_allel_cluster = {}
-        allel_list = []
-
 
         #Selecting allel size
         for values in dic_allel[cluster_num]:
@@ -113,31 +112,30 @@ def allel(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
             allel_type = allel_type.replace("(","")
 
             #adding unique allel to list
-            if MIN_SEL_SRR_SPECIAL == 0:
-                if allel_size in dic_allel_cluster.keys():
-                    dic_allel_cluster[allel_size][0] += 1
-                    dic_allel_cluster[allel_size][1].append(id)
-                    allel_list.append(allel_size)
-                else:
-                    dic_allel_cluster[allel_size] = [[],[]]
-                    dic_allel_cluster[allel_size][0] = 1
-                    dic_allel_cluster[allel_size][1].append(id)
-                    allel_list.append(allel_size)
+
+            if allel_size in dic_allel_cluster.keys():
+                dic_allel_cluster[allel_size][0] += 1
+                dic_allel_cluster[allel_size][1].append(id)
+
             else:
-                allel_list.append(int(allel_size))
-        #print(dic_allel_cluster)
+                dic_allel_cluster[allel_size] = [[],[]]
+                dic_allel_cluster[allel_size][0] = 1
+                dic_allel_cluster[allel_size][1].append(id)
 
-        for i in dic_allel_cluster:
-            for x in dic_allel_cluster[i][1]:
-                dic_fuck[x] = str(dic_allel_cluster[i][0])
+            dic_shit[cluster_num] = len(dic_allel_cluster.keys())
+            if MIN_SEL_SRR_SPECIAL == 1:
+                dic_fuck[cluster_num] = list(map(int,dic_allel_cluster.keys()))
 
-        #Selecting cluster for exclusion
-        if MIN_SEL_SRR_SPECIAL == 0:
-            if len(allel_list) < MIN_SEL_SRR:
-                cluster_exclude.append(cluster_num)
-        else:
-            if max(allel_list) - min(allel_list) < MIN_SEL_SSR_SPECIAL_DIF:
-                cluster_exclude.append(cluster_num)
+
+    if MIN_SEL_SRR_SPECIAL == 0:
+        for cluster in dic_shit.keys():
+            #print(dic_shit.keys())
+            if dic_shit[cluster] < MIN_SEL_SRR:
+                cluster_exclude.append(cluster)
+    else:
+        for cluster in dic_fuck:
+            if max(dic_fuck[cluster]) - min(dic_fuck[cluster]) < MIN_SEL_SSR_SPECIAL_DIF:
+                cluster_exclude.append(cluster)
 
     #Reseting file cursor
     readfile1.seek(0)
@@ -147,6 +145,5 @@ def allel(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
         selected_line = line.split("\t")
         selected_line[9] = selected_line[9].rstrip()
         if selected_line[8] not in cluster_exclude:
-            short_id = selected_line[0][0:10]
-            selected_line.append(dic_fuck[short_id] + "\n")
+            selected_line.append(str(dic_shit[selected_line[8]]) + "\n")
             outfile1.write("\t".join(selected_line))

@@ -153,6 +153,6 @@ primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
 output()
-#junk()
+junk()
 
 os.system("echo 'Done!'")

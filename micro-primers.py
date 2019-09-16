@@ -134,7 +134,7 @@ def output():
 def junk():
     os.system("rm -r .temp/")
 
-#Pipeline
+#Pipeline 
 trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()

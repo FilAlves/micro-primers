@@ -25,7 +25,7 @@ MIN_FLANK_LEN=50
 MIN_MOTIF_REP=5
 
 # Class of SSR to exclude (c & c*- Compost, p1 - 1 letter ssr, etc.)
-EXC_SSR=c,c*,p1
+EXC_MOTIF_TYPE=c,c*,p1
 
 #Minimum number of alleles in cluster
 MIN_ALLEL_CNT=5

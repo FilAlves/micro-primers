@@ -22,7 +22,7 @@ CUTADAPT_5=GCGGTACCCGGGAAGCTTGG
 MIN_FLANK_LEN=50
 
 # Minimum size of ssr pattern;
-MIN_SSR_REP=5
+MIN_MOTIF_REP=5
 
 # Class of SSR to exclude (c & c*- Compost, p1 - 1 letter ssr, etc.)
 EXC_SSR=c,c*,p1

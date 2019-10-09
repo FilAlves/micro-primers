@@ -30,7 +30,7 @@ EXC_MOTIF_TYPE=c,c*,p1
 #Minimum number of alleles in cluster
 MIN_ALLEL_CNT=5
 
-#Special search, for when the number of alleles in each cluster doesn't surpass the minimum. If this option is active MIN_ALLEL_CNT is not taken into account. (1 - ACTIVE; 0 - DESABLE)
+#Special search, for when the number of alleles in each cluster doesn't surpass the minimum. If this option is active MIN_ALLEL_CNT is not taken into account. (1 - ACTIVE; 0 - DISABLE)
 MIN_ALLEL_SPECIAL=0
 
 #Minimum difference between allele with higher number of repeats and the allele with less number of repeats

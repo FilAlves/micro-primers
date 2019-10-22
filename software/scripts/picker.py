@@ -73,16 +73,16 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
     outfile.write("\n")
 
-def allel(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
+def allele(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
 
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
 
-    #Clusters to be exluded for having few allel size diferences
+    #Clusters to be exluded for having few allele size diferences
     cluster_exclude = []
 
-    #Dictionary for saving sequence id and allel for each cluster
-    dic_allel = {}
+    #Dictionary for saving sequence id and allele for each cluster
+    dic_allele = {}
     dic_fuck = {}
     dic_shit = {}
 
@@ -92,39 +92,39 @@ def allel(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
         short_id = selected_line[0][0:10]
 
         # Writing dictionary
-        if selected_line[8] not in dic_allel.keys():
-            dic_allel[selected_line[8]] = []
+        if selected_line[8] not in dic_allele.keys():
+            dic_allele[selected_line[8]] = []
             templist = [short_id, selected_line[3]]
-            dic_allel[selected_line[8]].append(templist)
+            dic_allele[selected_line[8]].append(templist)
         else:
-            dic_allel[selected_line[8]].append([short_id, selected_line[3]])
+            dic_allele[selected_line[8]].append([short_id, selected_line[3]])
 
 
-    for cluster_num in dic_allel:
+    for cluster_num in dic_allele:
 
         #List of every different allel for a given cluster
-        dic_allel_cluster = {}
+        dic_allele_cluster = {}
 
         #Selecting allel size
-        for values in dic_allel[cluster_num]:
+        for values in dic_allele[cluster_num]:
             id = values[0]
-            allel_type, allel_size = values[1].split(")")
-            allel_type = allel_type.replace("(","")
+            allele_type, allele_size = values[1].split(")")
+            allele_type = allele_type.replace("(","")
 
             #adding unique allel to list
 
-            if allel_size in dic_allel_cluster.keys():
-                dic_allel_cluster[allel_size][0] += 1
-                dic_allel_cluster[allel_size][1].append(id)
+            if allele_size in dic_allele_cluster.keys():
+                dic_allele_cluster[allele_size][0] += 1
+                dic_allele_cluster[allele_size][1].append(id)
 
             else:
-                dic_allel_cluster[allel_size] = [[],[]]
-                dic_allel_cluster[allel_size][0] = 1
-                dic_allel_cluster[allel_size][1].append(id)
+                dic_allele_cluster[allele_size] = [[],[]]
+                dic_allele_cluster[allele_size][0] = 1
+                dic_allele_cluster[allele_size][1].append(id)
 
-            dic_shit[cluster_num] = len(dic_allel_cluster.keys())
+            dic_shit[cluster_num] = len(dic_allele_cluster.keys())
             if MIN_SEL_SRR_SPECIAL == 1:
-                dic_fuck[cluster_num] = list(map(int,dic_allel_cluster.keys()))
+                dic_fuck[cluster_num] = list(map(int,dic_allele_cluster.keys()))
 
 
     if MIN_SEL_SRR_SPECIAL == 0:

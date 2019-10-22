@@ -63,10 +63,10 @@ def length_add():
     text_manip.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
 
 #Selection of microssatelites with enough space for primer
-def good_micros(dist, rep, exclude):
+def good_micros(MIN_FLANK_LEN, MIN_MOTIF_REP, EXC_MOTIF_TYPE):
     os.system("echo 'Selecting good microsatellites...'")
     picker.csv_picker(".temp/length_add_out.misa", ".temp/good_micros_out.fasta",
-                ".temp/good_micros_table_out.misa",dist, rep, exclude)
+                ".temp/good_micros_table_out.misa", MIN_FLANK_LEN, MIN_MOTIF_REP, EXC_MOTIF_TYPE)
 
 #Extraction of the microsatellite sequence from allignement of fragments with flanking regions
 def splitSSR():
@@ -88,8 +88,8 @@ def cluster_info():
     os.system("echo 'Adding information to the table of microsatellites...'")
     text_manip.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
-def cluster_filter(MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
-    picker.allel(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF)
+def cluster_filter(MIN_ALLEL_CNT, MIN_ALLEL_SPECIAL, MIN_ALLEL_SPECIAL_DIF):
+    picker.allele(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_ALLEL_CNT, MIN_ALLEL_SPECIAL, MIN_ALLEL_SPECIAL_DIF)
 
 # Selecting one sequence per cluster
 def selected_micros():
@@ -134,7 +134,7 @@ def output():
 def junk():
     os.system("rm -r .temp/")
 
-#Pipeline 
+#Pipeline
 trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()
@@ -153,6 +153,6 @@ primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
 output()
-#junk()
+junk()
 
 os.system("echo 'Done!'")

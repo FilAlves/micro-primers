@@ -1,11 +1,3 @@
-def dna_reverse(seq):
-    #Complementary DNA dictionary
-    dic_comp={"A":"T", "T":"A", "G":"C", "C":"G"}
-
-    #Returning complementary sequence (NOT REVERSED)
-    return ''.join(dic_comp[base] for base in seq)
-
-
 def selected_micros(rf1, of_sel_micros, of_id_micros):
     readfile1 = open(rf1, "r")
     outfile1 = open(of_sel_micros, "w")
@@ -30,20 +22,19 @@ def selected_micros(rf1, of_sel_micros, of_id_micros):
     for keys,values in dic_cluster.items():
         outfile1.write(values + "\n")
 
-def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
+    outfile1.close()
+    outfile2.close()
+
+def csv_picker(rf,
+               of_micros_good,
+               of_micros_tab,
+               min_ext_dist,
+               min_rep,
+               exclude_ssr):
+
     readfile = open(rf, "r")
-    outfile = open(of_micros_good, "w")
+    outfile1 = open(of_micros_good, "w")
     outfile2 = open(of_micros_tab, "w")
-
-
-    #Minimal number of bases after and before SSR
-    min_ext_dist = dist
-
-    #Mnimal repetitions of SSR
-    min_rep = rep
-
-    #Types of ssr to exclude from further search
-    exclude_ssr = exclude
 
     id = 1
 
@@ -66,14 +57,20 @@ def csv_picker(rf, of_micros_good, of_micros_tab, dist, rep, exclude):
             if int(selected_line[7]) - int(selected_line[6]) >= min_ext_dist and int(selected_line[5]) >= min_ext_dist:
                 good_micros = list(selected_line[i] for i in [0, 5, 6, 7])
                 good_micros = [str(id)] + good_micros
-                outfile.write("\t".join(good_micros))
+                outfile1.write("\t".join(good_micros))
                 outfile2.write("\t".join(selected_line))
                 id += 1
 
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
-    outfile.write("\n")
+    outfile1.write("\n")
+    outfile1.close()
+    outfile2.close()
 
-def allele(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
+def allele(rf1,
+           of1,
+           MIN_SEL_SRR,
+           MIN_SEL_SRR_SPECIAL,
+           MIN_SEL_SSR_SPECIAL_DIF):
 
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
@@ -114,12 +111,10 @@ def allele(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
 
             if allele_size in dic_pool_cluster.keys():
                 dic_pool_cluster[allele_size][0] += 1
-                dic_pool_cluster[allele_size][1].append(id)
-
             else:
                 dic_pool_cluster[allele_size] = [[],[]]
                 dic_pool_cluster[allele_size][0] = 1
-                dic_pool_cluster[allele_size][1].append(id)
+            dic_pool_cluster[allele_size][1].append(id)
 
             dic_allele[cluster_num] = len(dic_pool_cluster.keys())
             if MIN_SEL_SRR_SPECIAL == 1:
@@ -145,3 +140,5 @@ def allele(rf1, of1, MIN_SEL_SRR, MIN_SEL_SRR_SPECIAL, MIN_SEL_SSR_SPECIAL_DIF):
         if selected_line[8] not in cluster_exclude:
             selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
             outfile1.write("\t".join(selected_line))
+
+    outfile1.close()

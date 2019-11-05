@@ -1,7 +1,5 @@
 def change_ids_and_calc_len(rf1, of1, of2):
 
-    #Opening files
-
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
     outfile2 = open(of2, "w")
@@ -39,7 +37,11 @@ def change_ids_and_calc_len(rf1, of1, of2):
             len_line = len_line + "\t" + str(size)
             outfile2.write(len_line + "\n")
 
+    outfile1.close()
+    outfile2.close()
+
 def split(rf1, rf2, of1):
+
     readfile1 = open(rf1, "r")
     readfile2 = open(rf2, "r")
     outfile1 = open(of1, "w")
@@ -94,6 +96,8 @@ def split(rf1, rf2, of1):
                 if selected_line[0][0] == ">":
                     last_seq = selected_line[0][1:11]
 
+    outfile1.close()
+
 def cluster(rf1, of1):
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
@@ -128,6 +132,8 @@ def cluster(rf1, of1):
             size_cluster = len(dic_cluster[key])
             outfile1.write(str(x) + "\t" + str(key) + "\t" + str(size_cluster) + "\n")
 
+    outfile1.close()
+
 def add_cluster_info(rf1, rf2, of1):
 
     readfile1 = open(rf1, "r")
@@ -160,10 +166,13 @@ def add_cluster_info(rf1, rf2, of1):
         #Outfile writing
         outfile1.write("\t".join(selected_line) + "\n")
 
-def length_merger(rf_csv, rf_length, of):
-    readfile_csv = open(rf_csv, "r")
-    readfile_length = open(rf_length, "r")
-    outfile = open(of,"w")
+    outfile1.close()
+
+def length_merger(rf1, rf2, of1):
+
+    readfile_csv = open(rf1, "r")
+    readfile_length = open(rf2, "r")
+    outfile1 = open(of1,"w")
 
     #Creating dicitonary with SeqID and ssr length
     dic_length = {}
@@ -186,4 +195,6 @@ def length_merger(rf_csv, rf_length, of):
         #Creating new tab with ssr length
         if selected_line[0][0:10] in dic_length.keys():
             selected_line.append(dic_length[selected_line[0][0:10]])
-            outfile.write("\t".join(selected_line))
+            outfile1.write("\t".join(selected_line))
+
+    outfile1.close()

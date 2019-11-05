@@ -1,4 +1,5 @@
 def config(rd):
+
     readfile = open(rd, "r")
 
     #Saves settings parameters as list

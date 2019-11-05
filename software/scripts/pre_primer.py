@@ -17,6 +17,8 @@ def pseudofasta(rf1, rf2, of1):
                 nextline = readfile2.readline()
                 outfile1.write("SEQUENCE_ID=" + line[1:] + "SEQUENCE_TEMPLATE=" + nextline + "=" + "\n")
 
+    outfile1.close()
+
 def final_primers(rf1, rf2, of1):
 
     readfile1 = open(rf1, "r")
@@ -67,3 +69,5 @@ def final_primers(rf1, rf2, of1):
                     count = 1
                 else:
                     outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\t" + cluster_size + "\t" + "\n")
+
+    outfile1.close()

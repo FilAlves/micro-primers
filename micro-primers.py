@@ -65,15 +65,9 @@ def flash():
               "Error: FLASH couldn0t merge sequences.")
 
 # Selecion of fragments that start and ends with the pattern of the restriction enzyme
-def grep():
+def python_grep():
     print('Selecting sequences with restriction enzime patterns...')
-    micro_primers_system_call("grep "
-              "-B1 '^GATC\(\w*\)GATC$' "
-              ".temp/flash_out.extendedFrags.fastq "
-              "| sed 's/^@/>/' "
-              "| perl -pe 's/--\n//g' "
-              "> .temp/grep_out.fasta",
-              "Error: Grep failed")
+    text_manip.python_grep(".temp/flash_out.extendedFrags.fastq", ".temp/grep_out.fasta")
 
 #Change id's and Length Calculation for later selection of valid microsatellites
 def ids_and_len():
@@ -178,10 +172,12 @@ def junk():
     os.system("rm -r .temp/")
 
 #Pipeline
+python_grep()
+"""
 trimmomatic(settings[0], settings[1])
 cutadapt(settings[2], settings[3])
 flash()
-grep()
+python_grep()
 ids_and_len()
 misa()
 length_add()
@@ -195,7 +191,7 @@ selected_micros()
 primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
-output()
+output()"""
 #junk()
 
 print('Done!')

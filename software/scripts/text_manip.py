@@ -1,3 +1,5 @@
+import re
+
 def change_ids_and_calc_len(rf1, of1, of2):
 
     readfile1 = open(rf1, "r")
@@ -198,3 +200,14 @@ def length_merger(rf1, rf2, of1):
             outfile1.write("\t".join(selected_line))
 
     outfile1.close()
+
+def python_grep(rf1, of1):
+    readfile1 = open(rf1, "r")
+    outfile1 = open(of1, "w")
+
+    for line in readfile1:
+        pattern = r'^GATC\w*GATC$'
+        seq = re.match(pattern, line)
+        if seq:
+            print(re.sub("^@",">",prev_line) + seq.group(0), file=outfile1)
+        prev_line = line

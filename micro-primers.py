@@ -29,11 +29,10 @@ def trimmomatic(R1, R2):
         "%s %s "
         ".temp/trim_out_trimmed_R1.fastq .temp/trim_out_unpaired_R1.fastq "
         ".temp/trim_out_trimmed_R2.fastq .temp/trim_out_unpaired_R2.fastq "
-        "ILLUMINACLIP:./software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10 "
-        "LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 2> logs/trim_log.txt"
+        "ILLUMINACLIP:./software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10"
+        " LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 2> logs/trim_log.txt"
         %(R1, R2),
-        "Error: Trimmomatic couldn't remove adapters"
-        )
+        "Error: Trimmomatic couldn't remove adapters")
 
 #Adapters removal (specifics from technology)
 def cutadapt(a, g):
@@ -172,10 +171,8 @@ def junk():
     os.system("rm -r .temp/")
 
 #Pipeline
-python_grep()
-"""
-trimmomatic(settings[0], settings[1])
-cutadapt(settings[2], settings[3])
+trimmomatic(settings[0], settings[1]),
+cutadapt(settings[2], settings[3]),
 flash()
 python_grep()
 ids_and_len()
@@ -191,7 +188,7 @@ selected_micros()
 primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
-output()"""
+output()
 #junk()
 
 print('Done!')

@@ -25,49 +25,57 @@ def final_primers(rf1, rf2, of1):
     readfile2 = open(rf2, "r")
     outfile1 = open(of1, "w")
 
-    dic_selected = {}
+    out = []
+    dic_attr = {}
 
     for line in readfile1:
         line = line.rstrip()
         selected_line = line.split("\t")
-        dic_selected[selected_line[0]] = [selected_line[1], selected_line[2], selected_line[3], selected_line[4], selected_line[5]]
+        dic_attr[selected_line[0]] = [selected_line[1], selected_line[2], selected_line[3], selected_line[4], selected_line[5]]
 
-    for line in readfile2:
+    transform(readfile2, outfile1, dic_attr)
+
+    outfile1.close()
+
+def transform(readfile, outfile, dic):
+    out = []
+    for line in readfile:
         line = line.rstrip()
         if re.match("^SEQUENCE_ID", line):
-            junk, id = line.split("=")
+            id = line.split("=")[1]
             count = 0
         elif re.match("^PRIMER_LEFT_\d_SEQUENCE", line):
-            junk, left = line.split("=")
+            out.append(line.split("=")[1])
         elif re.match("^PRIMER_RIGHT_\d_SEQUENCE", line):
-            junk, right = line.split("=")
+            out.append(line.split("=")[1])
         elif re.match("^PRIMER_LEFT_\d_TM", line):
-            junk, left_tm = line.split("=")
+            out.append(line.split("=")[1])
         elif re.match("^PRIMER_RIGHT_\d_TM=", line):
-            junk, right_tm = line.split("=")
+            out.append(line.split("=")[1])
         elif re.match("^PRIMER_LEFT_\d=(\d*),(\d*)", line):
-            junk, next = line.split("=")
+            next = line.split("=")[1]
             left_ini, left_len = next.split(",")
         elif re.match("^PRIMER_RIGHT_\d=(\d*),(\d*)", line):
-            junk, next = line.split("=")
+            next = line.split("=")[1]
             right_ini, right_len = next.split(",")
         elif re.match("^PRIMER_PAIR_\d_PRODUCT_SIZE=\d", line):
-            junk, product = line.split("=")
+            out.append(line.split("=")[1])
 
-            motif = dic_selected[id][0]
-            start = int(dic_selected[id][1])
-            end = int(dic_selected[id][2])
-            cluster = dic_selected[id][3]
-            cluster_size = dic_selected[id][4]
+            out.append(dic[id][0])
+            out.append(dic[id][4])
+            start = int(dic[id][1])
+            end = int(dic[id][2])
+            cluster = dic[id][3]
 
             good_left = int(left_ini) + int(left_len)
             good_right = int(right_ini) - int(right_len)
 
             if (good_left < start) and (good_right > end):
-                if count == 0:
-                    outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\t" + cluster_size + "\t" + "| BEST |" + "\n")
-                    count = 1
-                else:
-                    outfile1.write(id + "\t" + product + "\t" + left + "\t" + left_tm + "\t" + right + "\t" + right_tm + "\t" + motif + "\t" + cluster_size + "\t" + "\n")
-
-    outfile1.close()
+                out = list(out[i] for i in [4,0,2,1,3,5,6])
+                out = [str(id)] + out
+                outfile.write("\t".join(out))
+                if count == 0 :
+                    outfile.write("\t| BEST |" )
+                    count  = 1
+                outfile.write("\n")
+            out = []

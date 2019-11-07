@@ -68,9 +68,9 @@ def csv_picker(rf,
 
 def allele(rf1,
            of1,
-           MIN_SEL_SRR,
-           MIN_SEL_SRR_SPECIAL,
-           MIN_SEL_SSR_SPECIAL_DIF):
+           MIN_ALLELE_CNT,
+           MIN_ALLELE_SPECIAL,
+           MIN_ALLELE_SPECIAL_DIF):
 
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
@@ -82,20 +82,32 @@ def allele(rf1,
     dic_pool = {}
     dic_allele = {}
 
+    dic_writer(readfile1, dic_pool)
+    allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL)
+
+    if MIN_ALLELE_SPECIAL == 0:
+        for cluster in dic_allele.keys():
+            if dic_allele[cluster] < MIN_ALLELE_CNT:
+                cluster_exclude.append(cluster)
+    else:
+        for cluster in dic_allele:
+            if max(dic_allele[cluster]) - min(dic_allele[cluster]) < MIN_ALLEL_SPECIAL_DIF:
+                cluster_exclude.append(cluster)
+
+    #Reseting file cursor
+    readfile1.seek(0)
+
+    #Selecting sequences form clusters not excluded
     for line in readfile1:
-
         selected_line = line.split("\t")
-        short_id = selected_line[0][0:10]
+        selected_line[9] = selected_line[9].rstrip()
+        if selected_line[8] not in cluster_exclude:
+            selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
+            outfile1.write("\t".join(selected_line))
 
-        # Writing dictionary
-        if selected_line[8] not in dic_pool.keys():
-            dic_pool[selected_line[8]] = []
-            templist = [short_id, selected_line[3]]
-            dic_pool[selected_line[8]].append(templist)
-        else:
-            dic_pool[selected_line[8]].append([short_id, selected_line[3]])
+    outfile1.close()
 
-
+def allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL):
     for cluster_num in dic_pool:
 
         #List of every different allel for a given cluster
@@ -116,29 +128,21 @@ def allele(rf1,
                 dic_pool_cluster[allele_size][0] = 1
             dic_pool_cluster[allele_size][1].append(id)
 
-            dic_allele[cluster_num] = len(dic_pool_cluster.keys())
-            if MIN_SEL_SRR_SPECIAL == 1:
+
+            if MIN_ALLELE_SPECIAL == 1:
                 dic_allele[cluster_num] = list(map(int,dic_pool_cluster.keys()))
+            dic_allele[cluster_num] = len(dic_pool_cluster.keys())
 
-
-    if MIN_SEL_SRR_SPECIAL == 0:
-        for cluster in dic_allele.keys():
-            if dic_allele[cluster] < MIN_SEL_SRR:
-                cluster_exclude.append(cluster)
-    else:
-        for cluster in dic_allele:
-            if max(dic_allele[cluster]) - min(dic_allele[cluster]) < MIN_SEL_SSR_SPECIAL_DIF:
-                cluster_exclude.append(cluster)
-
-    #Reseting file cursor
-    readfile1.seek(0)
-
-    #Selecting sequences form clusters not excluded
+def dic_writer(readfile1, dic):
     for line in readfile1:
-        selected_line = line.split("\t")
-        selected_line[9] = selected_line[9].rstrip()
-        if selected_line[8] not in cluster_exclude:
-            selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
-            outfile1.write("\t".join(selected_line))
 
-    outfile1.close()
+        selected_line = line.split("\t")
+        short_id = selected_line[0][0:10]
+
+        # Writing dictionary
+        if selected_line[8] not in dic.keys():
+            dic[selected_line[8]] = []
+            templist = [short_id, selected_line[3]]
+            dic[selected_line[8]].append(templist)
+        else:
+            dic[selected_line[8]].append([short_id, selected_line[3]])

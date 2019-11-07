@@ -48,12 +48,6 @@ def split(rf1, rf2, of1):
     readfile2 = open(rf2, "r")
     outfile1 = open(of1, "w")
 
-    #Save last sequnce ID
-    last_seq = ""
-
-    #Save last DNA Sequence
-    dna_line = ""
-
     #Criating Dictionary containing Number ID, Sequence ID, start and end of SSR
     dic_micros = {}
 
@@ -63,12 +57,23 @@ def split(rf1, rf2, of1):
             dic_micros[selected_line[0]] = [selected_line[1][0:10], selected_line[2], selected_line[3]]
 
     # Search and cut of SSR in selected Sequences
+    ssr_cut(readfile2, outfile1, dic_micros)
+
+    outfile1.close()
+
+def ssr_cut(readfile2, outfile1, dic):
+
+    #Save last sequnce ID
+    last_seq = ""
+    #Save last DNA Sequence
+    dna_line = ""
+
     for line in readfile2:
         selected_line = line.split("\t")
 
-        for key in dic_micros:
+        for key in dic:
 
-            if selected_line[0][1:11] in str(dic_micros[key][0]):
+            if selected_line[0][1:11] in str(dic[key][0]):
 
                 #Selecting Sequence ID
                 if selected_line[0][0] == ">":
@@ -83,22 +88,18 @@ def split(rf1, rf2, of1):
                         nextline = readfile2.readline()
 
                         dna_line = nextline
-                    #Defining start and end of SSR
-                    first_cut = int(dic_micros.get(key)[1]) - 1
-                    second_cut = int(dic_micros.get(key)[2])
-
                     #Slicing away SSR
+                    first_cut = int(dic.get(key)[1]) - 1
+                    second_cut = int(dic.get(key)[2])
                     nextline = nextline[0 : first_cut] + nextline[second_cut: ]
 
                     #Output writing
-                    outfile1.write(selected_line[0])
-                    outfile1.write(nextline)
+                    outfile1.write(selected_line[0] + nextline)
 
                 #Saving last sequence ID:
                 if selected_line[0][0] == ">":
                     last_seq = selected_line[0][1:11]
 
-    outfile1.close()
 
 def cluster(rf1, of1):
     readfile1 = open(rf1, "r")

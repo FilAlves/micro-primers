@@ -1,8 +1,13 @@
 import os
 import sys
 
+def micro_primers_system_call(cmd, erro):
+    rvalue = os.system(cmd) # returns the exit code
+    if rvalue != 0:
+        sys.exit(erro)
+
 #Create empty file for importing python scripts
-os.system("touch software/scripts/__init__.py")
+micro_primers_system_call("touch software/scripts/__init__.py", "Error: Couldn't create init.py.")
 
 from software.scripts import picker, config, text_manip, pre_primer
 
@@ -11,15 +16,10 @@ settings = config.config("config.txt")
 
 #Creation of hidden temp file
 if os.path.isdir(".temp/") == False:
-    os.system("mkdir .temp")
+    micro_primers_system_call("mkdir .temp", "Error: Couldn't create .temp directory.")
 
 if os.path.isdir("logs/") == False:
-    os.system("mkdir logs")
-
-def micro_primers_system_call(cmd, erro):
-    rvalue = os.system(cmd) # returns the exit code
-    if rvalue != 0:
-        sys.exit(erro)
+    micro_primers_system_call("mkdir logs", "Error: Couldn't create log directory.")
 
 #Sequences Triming of Sequencer adapters
 def trimmomatic(R1, R2):
@@ -50,7 +50,7 @@ def cutadapt(a, g):
               "-o .temp/cut_out_nolink_R2.fastq .temp/trim_out_trimmed_R2.fastq "
               "> logs/cut_log_r2.txt"
               %(a, g),
-              "Error: CutAdapt couldn't remove adapters from R1 sequence.")
+              "Error: CutAdapt couldn't remove adapters from R2 sequence.")
 
 # Fusion of R1 and R2 files
 def flash():
@@ -83,7 +83,7 @@ def misa():
               "Error: Misa failed")
 
 #Adds length to end of the sequences to misa output
-def length_add():
+def length_merger():
     print('Adding length to misa output...')
     text_manip.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
 
@@ -120,8 +120,8 @@ def cluster_info():
     print('Adding information to the table of microsatellites...')
     text_manip.add_cluster_info(".temp/clusters_out.txt", ".temp/good_micros_table_out.misa", ".temp/cluster_info_out.txt")
 
-def cluster_filter(MIN_ALLEL_CNT, MIN_ALLEL_SPECIAL, MIN_ALLEL_SPECIAL_DIF):
-    picker.allele(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_ALLEL_CNT, MIN_ALLEL_SPECIAL, MIN_ALLEL_SPECIAL_DIF)
+def cluster_filter(MIN_ALLELE_CNT, MIN_ALLELE_SPECIAL, MIN_ALLELE_SPECIAL_DIF):
+    picker.allele(".temp/cluster_info_out.txt", ".temp/cluster_filter_out.txt", MIN_ALLELE_CNT, MIN_ALLELE_SPECIAL, MIN_ALLELE_SPECIAL_DIF)
 
 # Selecting one sequence per cluster
 def selected_micros():
@@ -156,7 +156,7 @@ def primer3(p3_settings):
 
 #Defining output name
 def name(file_name):
-    output_name, junk = file_name.split("_R")
+    output_name, _ = file_name.split("_R")
     output_name += "_primers.txt"
     return output_name
 
@@ -168,16 +168,16 @@ def output():
 
 #Removal of .temp directory
 def junk():
-    os.system("rm -r .temp/")
+    micro_primers_system_call("rm -r .temp/", "Error: Couldn't remove .temp directory.")
 
 #Pipeline
-trimmomatic(settings[0], settings[1]),
+"""trimmomatic(settings[0], settings[1]),
 cutadapt(settings[2], settings[3]),
 flash()
 python_grep()
 ids_and_len()
 misa()
-length_add()
+length_merger()
 good_micros(int(settings[4]), int(settings[5]), settings[6])
 splitSSR()
 cdhit()
@@ -188,7 +188,9 @@ selected_micros()
 primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
-output()
+output()"""
 #junk()
+
+output()
 
 print('Done!')

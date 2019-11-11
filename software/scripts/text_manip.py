@@ -173,15 +173,15 @@ def add_cluster_info(rf1, rf2, of1):
 
 def length_merger(rf1, rf2, of1):
 
-    readfile_csv = open(rf1, "r")
-    readfile_length = open(rf2, "r")
+    readfile1 = open(rf1, "r")
+    readfile2 = open(rf2, "r")
     outfile1 = open(of1,"w")
 
     #Creating dicitonary with SeqID and ssr length
     dic_length = {}
 
     # Dictionary writing
-    for line in readfile_length:
+    for line in readfile1:
 
         #Spliting file by tabs
         selected_line = line.split("\t")
@@ -189,7 +189,7 @@ def length_merger(rf1, rf2, of1):
         #Saving only 10 first caracters of ID.
         dic_length[selected_line[0][0:10]] = selected_line[1]
 
-    for line in readfile_csv:
+    for line in readfile2:
         selected_line = line.split("\t")
 
         #Removing \n from end tab
@@ -208,7 +208,7 @@ def python_grep(rf1, of1):
 
     for line in readfile1:
         pattern = r'^GATC\w*GATC$'
-        seq = re.match(pattern, line)
-        if seq:
-            print(re.sub("^@",">",prev_line) + seq.group(0), file=outfile1)
+        goal = re.match(pattern, line)
+        if goal:
+            print(re.sub("^@",">",prev_line) + goal.group(0), file=outfile1)
         prev_line = line

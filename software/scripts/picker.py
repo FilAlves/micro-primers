@@ -21,24 +21,24 @@ def selected_micros(rf1, of_sel_micros, of_id_micros):
     #creating tab_selected
     for keys,values in dic_cluster.items():
         outfile1.write(values + "\n")
-
+    readfile1.close()
     outfile1.close()
     outfile2.close()
 
-def csv_picker(rf,
+def matrix_picker(rf,
                of_micros_good,
                of_micros_tab,
                min_ext_dist,
                min_rep,
                exclude_ssr):
 
-    readfile = open(rf, "r")
+    readfile1 = open(rf, "r")
     outfile1 = open(of_micros_good, "w")
     outfile2 = open(of_micros_tab, "w")
 
     id = 1
 
-    for line in readfile:
+    for line in readfile1:
         #Split by tab
         selected_line = line.split("\t")
 
@@ -63,6 +63,7 @@ def csv_picker(rf,
 
     #Adding "\n" to the end of the file. It alsos messes with splitSSR script
     outfile1.write("\n")
+    readfile1.close()
     outfile1.close()
     outfile2.close()
 
@@ -89,10 +90,11 @@ def allele(rf1,
         for cluster in dic_allele.keys():
             if dic_allele[cluster] < MIN_ALLELE_CNT:
                 cluster_exclude.append(cluster)
-    else:
-        for cluster in dic_allele:
-            if max(dic_allele[cluster]) - min(dic_allele[cluster]) < MIN_ALLEL_SPECIAL_DIF:
-                cluster_exclude.append(cluster)
+    #else:
+        #for cluster in dic_allele:
+            #print(dic_allele[cluster])
+            #if max(dic_allele[cluster]) - min(dic_allele[cluster]) < MIN_ALLELE_SPECIAL_DIF:
+                #cluster_exclude.append(cluster)
 
     #Reseting file cursor
     readfile1.seek(0)
@@ -105,6 +107,7 @@ def allele(rf1,
             selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
             outfile1.write("\t".join(selected_line))
 
+    readfile1.close()
     outfile1.close()
 
 def allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL):
@@ -128,10 +131,9 @@ def allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL):
                 dic_pool_cluster[allele_size][0] = 1
             dic_pool_cluster[allele_size][1].append(id)
 
-
-            if MIN_ALLELE_SPECIAL == 1:
+        dic_allele[cluster_num] = len(dic_pool_cluster.keys())
+        if MIN_ALLELE_SPECIAL == 1:
                 dic_allele[cluster_num] = list(map(int,dic_pool_cluster.keys()))
-            dic_allele[cluster_num] = len(dic_pool_cluster.keys())
 
 def dic_writer(readfile1, dic):
     for line in readfile1:
@@ -142,7 +144,4 @@ def dic_writer(readfile1, dic):
         # Writing dictionary
         if selected_line[8] not in dic.keys():
             dic[selected_line[8]] = []
-            templist = [short_id, selected_line[3]]
-            dic[selected_line[8]].append(templist)
-        else:
-            dic[selected_line[8]].append([short_id, selected_line[3]])
+        dic[selected_line[8]].append([short_id, selected_line[3]])

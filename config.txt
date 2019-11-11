@@ -34,7 +34,7 @@ MIN_ALLEL_CNT=5
 MIN_ALLEL_SPECIAL=0
 
 #Minimum difference between allele with higher number of repeats and the allele with less number of repeats
-MIN_ALLEL_SPECIAL_DIF=6
+MIN_ALLEL_SPECIAL_DIF=8
 
 #PRIMER3
 PRIMER3_SETTINGS=CTM_settings_long.txt

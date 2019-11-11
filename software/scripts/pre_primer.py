@@ -35,6 +35,8 @@ def final_primers(rf1, rf2, of1):
 
     transform(readfile2, outfile1, dic_attr)
 
+    readfile1.close()
+    readfile2.close()
     outfile1.close()
 
 def transform(readfile, outfile, dic):

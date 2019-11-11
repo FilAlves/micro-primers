@@ -7,7 +7,7 @@ def micro_primers_system_call(cmd, erro):
         sys.exit(erro)
 
 #Create empty file for importing python scripts
-micro_primers_system_call("touch software/scripts/__init__.py", "Error: Couldn't create init.py.")
+micro_primers_system_call("touch software/scripts/__init__.py", "Error: could not create init.py.")
 
 from software.scripts import picker, config, text_manip, pre_primer
 
@@ -15,11 +15,11 @@ from software.scripts import picker, config, text_manip, pre_primer
 settings = config.config("config.txt")
 
 #Creation of hidden temp file
-if os.path.isdir(".temp/") == False:
-    micro_primers_system_call("mkdir .temp", "Error: Couldn't create .temp directory.")
+def folder (folders):
+    for i in folders:
+        if os.path.isdir(i) == False:
+            micro_primers_system_call("mkdir %s" %(i), "Error: could not create %s directory." %(i))
 
-if os.path.isdir("logs/") == False:
-    micro_primers_system_call("mkdir logs", "Error: Couldn't create log directory.")
 
 #Sequences Triming of Sequencer adapters
 def trimmomatic(R1, R2):
@@ -29,10 +29,10 @@ def trimmomatic(R1, R2):
         "%s %s "
         ".temp/trim_out_trimmed_R1.fastq .temp/trim_out_unpaired_R1.fastq "
         ".temp/trim_out_trimmed_R2.fastq .temp/trim_out_unpaired_R2.fastq "
-        "ILLUMINACLIP:./software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10"
-        " LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 2> logs/trim_log.txt"
+        "ILLUMINACLIP:./software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10 "
+        "LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 2> logs/trim_log.txt"
         %(R1, R2),
-        "Error: Trimmomatic couldn't remove adapters")
+        "Error: Trimmomatic could not remove adapters")
 
 #Adapters removal (specifics from technology)
 def cutadapt(a, g):
@@ -43,14 +43,14 @@ def cutadapt(a, g):
               "-o .temp/cut_out_nolink_R1.fastq .temp/trim_out_trimmed_R1.fastq "
               "> logs/cut_log_r1.txt"
               %(a, g),
-              "Error: CutAdapt couldn't remove adapters from R1 sequence.")
+              "Error: CutAdapt could not remove adapters from R1 sequence.")
     micro_primers_system_call("cutadapt "
               "-a %s "
               "-g %s "
               "-o .temp/cut_out_nolink_R2.fastq .temp/trim_out_trimmed_R2.fastq "
               "> logs/cut_log_r2.txt"
               %(a, g),
-              "Error: CutAdapt couldn't remove adapters from R2 sequence.")
+              "Error: CutAdapt could not remove adapters from R2 sequence.")
 
 # Fusion of R1 and R2 files
 def flash():
@@ -70,8 +70,7 @@ def python_grep():
 
 #Change id's and Length Calculation for later selection of valid microsatellites
 def ids_and_len():
-    print('Adding ids...')
-    print('Calculating sequences lengths...')
+    print('Adding ids...\nCalculating sequences lengths...')
     text_manip.change_ids_and_calc_len(".temp/grep_out.fasta", ".temp/ids_out.fasta", ".temp/length_calc_out.fasta")
 
 #Search Microssatelites
@@ -85,12 +84,12 @@ def misa():
 #Adds length to end of the sequences to misa output
 def length_merger():
     print('Adding length to misa output...')
-    text_manip.length_merger(".temp/misa_out.misa", ".temp/length_calc_out.fasta", ".temp/length_add_out.misa")
+    text_manip.length_merger(".temp/length_calc_out.fasta", ".temp/misa_out.misa", ".temp/length_add_out.misa")
 
 #Selection of microssatelites with enough space for primer
 def good_micros(MIN_FLANK_LEN, MIN_MOTIF_REP, EXC_MOTIF_TYPE):
     print('Selecting good microsatellites...')
-    picker.csv_picker(".temp/length_add_out.misa", ".temp/good_micros_out.fasta",
+    picker.matrix_picker(".temp/length_add_out.misa", ".temp/good_micros_out.fasta",
                 ".temp/good_micros_table_out.misa", MIN_FLANK_LEN, MIN_MOTIF_REP, EXC_MOTIF_TYPE)
 
 #Extraction of the microsatellite sequence from allignement of fragments with flanking regions
@@ -138,7 +137,7 @@ def size_check(SPECIAL_CASE):
     if os.path.getsize(".temp/primer3_input_out.fasta") < 1:
         print("Empty primer3 input file. \n")
         if SPECIAL_CASE == 0:
-            sys.exit("No valid SSR's were selected. Try using broad search.")
+            sys.exit("No valid SSR's were selected. Try to use a broader search.")
         elif SPECIAL_CASE == 1:
             sys.exit("No valid SSR's were selected.")
 
@@ -156,8 +155,7 @@ def primer3(p3_settings):
 
 #Defining output name
 def name(file_name):
-    output_name, _ = file_name.split("_R")
-    output_name += "_primers.txt"
+    output_name = file_name.split("_R")[0] + "_primers.txt"
     return output_name
 
 #Selection of primers following laboratory criteria and output formatting
@@ -168,10 +166,11 @@ def output():
 
 #Removal of .temp directory
 def junk():
-    micro_primers_system_call("rm -r .temp/", "Error: Couldn't remove .temp directory.")
+    micro_primers_system_call("rm -r .temp/", "Error: could not remove .temp directory.")
 
 #Pipeline
-"""trimmomatic(settings[0], settings[1]),
+folder([".temp/","logs/"])
+trimmomatic(settings[0], settings[1]),
 cutadapt(settings[2], settings[3]),
 flash()
 python_grep()
@@ -188,9 +187,7 @@ selected_micros()
 primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
-output()"""
-#junk()
-
 output()
+#junk()
 
 print('Done!')

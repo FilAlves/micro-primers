@@ -90,11 +90,10 @@ def allele(rf1,
         for cluster in dic_allele.keys():
             if dic_allele[cluster] < MIN_ALLELE_CNT:
                 cluster_exclude.append(cluster)
-    #else:
-        #for cluster in dic_allele:
-            #print(dic_allele[cluster])
-            #if max(dic_allele[cluster]) - min(dic_allele[cluster]) < MIN_ALLELE_SPECIAL_DIF:
-                #cluster_exclude.append(cluster)
+    else:
+        for cluster in dic_allele:
+            if max(dic_allele[cluster]) - min(dic_allele[cluster]) < MIN_ALLELE_SPECIAL_DIF:
+                cluster_exclude.append(cluster)
 
     #Reseting file cursor
     readfile1.seek(0)
@@ -104,13 +103,20 @@ def allele(rf1,
         selected_line = line.split("\t")
         selected_line[9] = selected_line[9].rstrip()
         if selected_line[8] not in cluster_exclude:
-            selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
+            if MIN_ALLELE_SPECIAL == 1:
+                alleles = ("[" + str(min(dic_allele[selected_line[8]]))
+                         + "," + str(max(dic_allele[selected_line[8]]))
+                         + "]" + str(len(dic_allele[selected_line[8]])) + "\n")
+                selected_line.append(alleles)
+            else:
+                selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
             outfile1.write("\t".join(selected_line))
 
     readfile1.close()
     outfile1.close()
 
 def allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL):
+
     for cluster_num in dic_pool:
 
         #List of every different allel for a given cluster
@@ -133,7 +139,8 @@ def allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL):
 
         dic_allele[cluster_num] = len(dic_pool_cluster.keys())
         if MIN_ALLELE_SPECIAL == 1:
-                dic_allele[cluster_num] = list(map(int,dic_pool_cluster.keys()))
+            dic_allele[cluster_num] = list(map(int, dic_pool_cluster.keys()))
+
 
 def dic_writer(readfile1, dic):
     for line in readfile1:

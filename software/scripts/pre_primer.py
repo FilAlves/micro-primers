@@ -70,7 +70,7 @@ def transform(readfile, outfile, dic):
             cluster = dic[id][3]
 
             good_left = int(left_ini) + int(left_len)
-            good_right = int(right_ini) - int(right_len)
+            good_right = int(right_ini)
 
             if (good_left < start) and (good_right > end):
                 out = list(out[i] for i in [4,0,2,1,3,5,6])

@@ -27,14 +27,18 @@ Micro-Primers pipeline was written in Python version 3.6 and consists basically 
 
 ## Input Files
 
-In order to run Micro-Primers, users only need to provide two FASTQ files corresponding to both ends of a pair-end sequencing. Samples should come from a pool of (untagged) individuals of the same species so the microsatellite selection can be optimized. SSR selection will be performed based on the number of alleles of each SSR loci, so the more heterogeneous is the sample, the better will be the final result. Reads must come from a microsatellite library built using a restriction enzyme and following an enrichment protocol such as the one described in [78]. The idea behind the enrichment protocol after digestion is to have a random representation from the whole genome where the target SSR motifs will be the most represented strands in the final library. A fragment size selection is then performed on the enriched library to keep only fragments of an average length lower than the maximum sequencing length so both paired-ends reads overlap when merged later on. The final fragment size is important for microsatellite screening and must comprise the full SSR pattern (variable in length) and the two flanking regions with fair length for primer design.
+In order to run Micro-Primers, users only need to provide two FASTQ files corresponding to both ends of a pair-end sequencing. Samples should come from a pool of (untagged) individuals of the same species so the microsatellite selection can be optimized. SSR selection will be performed based on the number of alleles of each SSR loci, so the more heterogeneous is the sample, the better will be the final result. Reads must come from a microsatellite library built using a restriction enzyme and following an enrichment protocol. The idea behind the enrichment protocol after digestion is to have a random representation from the whole genome where the target SSR motifs will be the most represented strands in the final library. A fragment size selection is then performed on the enriched library to keep only fragments of an average length lower than the maximum sequencing length so both paired-ends reads overlap when merged later on. The final fragment size is important for microsatellite screening and must comprise the full SSR pattern (variable in length) and the two flanking regions with fair length for primer design.
 
 ## Execution Parameters
 
+### Input Files
 All the parameters that Micro-Primers needs to properly perform the analysis must be set at the config.txt file. In this text file there are four sections with different parameters to take into account for the pipeline execution. First of all, it can be found the "Input files" section where the user has to indicate the name of the pair-end files that will be used in the analysis. 
 
+
+### Cutadapt
 Then, at the "CUTADAPT" section, the sequence of adapters used after the restriction enzyme digestion is required.
 
+### SSR
 Next stage is called "SSR" and several parameters regarding the microsatellite selection are involved. 
 
 - MIN_FLANK_LEN defines the minimum length accepted in both flanking regions where the primers will be designed on. 
@@ -47,11 +51,14 @@ Next stage is called "SSR" and several parameters regarding the microsatellite s
 
 - MIN_ALLEL_SPECIAL is used to enable or disable (1=enabled, 0=disabled) the option to select microsatellites with less number of alleles previously indicated as long as the difference between the allele with higher number of repeats and the allele with a smaller number of repeats satisfy the number indicated in MIN_ALLEL_SPECIAL_DIFF. 
 
-PRIMER3_SETTINGS indicates the path to the Primer3 settings file. In this settings file several parameters can be changed but a general one is provided with the standard parameters that Primer3 includes.
+- PRIMER3_SETTINGS indicates the path to the Primer3 settings file. In this settings file several parameters can be changed but a general one is provided with the standard parameters that Primer3 includes.
 
-No spaces or additional text character should be present after the character "=". 
+![imagem](https://user-images.githubusercontent.com/38048444/73688787-af7d9a00-46c4-11ea-8192-49f8cf4f0f98.png)
 
-Every setting, besides R1 and R2 file names, have a default value defined in the configuration file.
+### Notes 
+- No spaces or additional text character should be present after the character "=". 
+
+- Every setting, besides R1 and R2 file names, have a default value defined in the configuration file.
 
 ![imagem](https://user-images.githubusercontent.com/38048444/73688787-af7d9a00-46c4-11ea-8192-49f8cf4f0f98.png)
 

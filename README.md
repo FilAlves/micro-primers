@@ -60,8 +60,6 @@ Next stage is called "SSR" and several parameters regarding the microsatellite s
 
 - Every setting, besides R1 and R2 file names, have a default value defined in the configuration file.
 
-![imagem](https://user-images.githubusercontent.com/38048444/73688787-af7d9a00-46c4-11ea-8192-49f8cf4f0f98.png)
-
 # Output
 
 The final output file is divided by tabs and contains eight columns. Each line represents the primers designed by Primer3 for each SSR found in the sample. (a) First column (red) contains the sequence identifier. For each loci representative various primers can be designed, giving the users various options for optimal amplification. (b) Next, the total size of the SSR is shown (Brown). The primers designed are shown next, starting with the left primer and respective Tm, followed by the right Primer and respective Tm. Both primers are shown with direction 5’ to 3’. Then, the specific motif/allele found is shown with the total number of alleles for the specific SSR loci (black). The flag "|BEST|" is shown if Primer3 defines the corresponding primer as the best one for loci amplification.

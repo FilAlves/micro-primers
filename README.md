@@ -13,9 +13,9 @@ For any questions please send an email to filipealvesbio@gmail.com
 
 ## Installation (linux)
 
-1. Using the terminal, clone the repository using the command 'git clone https://github.com/FilAlves/micro-primers'.
-2. Install suing the command 'sudo python3 ~/micro-primers/install.py'
-3. Configure config.txt 
+1. Using the terminal, clone the repository using the command 'git clone https://github.com/FilAlves/micro-primers';
+2. Install suing the command 'sudo python3 ~/micro-primers/install.py';
+3. Configure config.txt .
 
 # The Pipeline
 

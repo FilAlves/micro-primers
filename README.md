@@ -1,5 +1,5 @@
 # Micro-Primers
-Micro-Primers is a Python and PERL coded pipeline to identify and design PCR primers for amplification of SSR loci. The pipeline takes as input just a FASTQ file containing sequences from NGS and returns a text file with information regarding the microsatellite markers, including number of alleles in the population, the melting temperature and the respective product of primer sets to easily guide the selection of optimal markers for the species. This pipeline correctly only supports UNIX based operating systems.
+Micro-Primers is a Python and PERL coded pipeline to identify and design PCR primers for amplification of SSR loci. The pipeline takes as input just a FASTQ file containing sequences from NGS (next generation sequencing) and returns a text file with information regarding the microsatellite markers, including number of alleles in the population, the melting temperature and the respective product of primer sets to easily guide the selection of optimal markers for the species. This pipeline correctly only supports UNIX based operating systems.
 
 For any questions please send an email to filipealvesbio@gmail.com
 

@@ -15,7 +15,7 @@ def selected_micros(rf1, of_sel_micros, of_id_micros):
             dic_cluster[selected_line[8]] = selected_line[0]
 
             #Creating outfile with sequenceID, ssr, start and end positions of the ssr
-            selected_micros = list( selected_line[i] for i in [0, 3, 5, 6, 8, 10])
+            selected_micros = list( selected_line[i] for i in [0, 3, 5, 6, 8, 10, 11, 12])
             outfile2.write("\t".join(selected_micros))
 
     #creating tab_selected
@@ -88,7 +88,7 @@ def allele(rf1,
 
     if MIN_ALLELE_SPECIAL == 0:
         for cluster in dic_allele.keys():
-            if dic_allele[cluster] < MIN_ALLELE_CNT:
+            if len(dic_allele[cluster]) < MIN_ALLELE_CNT:
                 cluster_exclude.append(cluster)
     else:
         for cluster in dic_allele:
@@ -103,13 +103,10 @@ def allele(rf1,
         selected_line = line.split("\t")
         selected_line[9] = selected_line[9].rstrip()
         if selected_line[8] not in cluster_exclude:
-            if MIN_ALLELE_SPECIAL == 1:
-                alleles = ("[" + str(min(dic_allele[selected_line[8]]))
-                         + "," + str(max(dic_allele[selected_line[8]]))
-                         + "]" + str(len(dic_allele[selected_line[8]])) + "\n")
-                selected_line.append(alleles)
-            else:
-                selected_line.append(str(dic_allele[selected_line[8]]) + "\n")
+            alleles = (str(min(dic_allele[selected_line[8]])) + "\t" +
+                       str(max(dic_allele[selected_line[8]])) + "\t" +
+                       str(len(dic_allele[selected_line[8]])) + "\n")
+            selected_line.append(alleles)
             outfile1.write("\t".join(selected_line))
 
     readfile1.close()
@@ -137,9 +134,7 @@ def allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL):
                 dic_pool_cluster[allele_size][0] = 1
             dic_pool_cluster[allele_size][1].append(id)
 
-        dic_allele[cluster_num] = len(dic_pool_cluster.keys())
-        if MIN_ALLELE_SPECIAL == 1:
-            dic_allele[cluster_num] = list(map(int, dic_pool_cluster.keys()))
+        dic_allele[cluster_num] = list(map(int, dic_pool_cluster.keys()))
 
 
 def dic_writer(readfile1, dic):

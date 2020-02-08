@@ -15,7 +15,9 @@ def pseudofasta(rf1, rf2, of1):
         if line[0] == ">" :
             if line[1:] in selected_seqs:
                 nextline = readfile2.readline()
-                outfile1.write("SEQUENCE_ID=" + line[1:] + "SEQUENCE_TEMPLATE=" + nextline + "=" + "\n")
+                outfile1.write("SEQUENCE_ID=" + line[1:] +
+                               "SEQUENCE_TEMPLATE=" + nextline +
+                               "=" + "\n")
 
     outfile1.close()
 
@@ -31,7 +33,10 @@ def final_primers(rf1, rf2, of1):
     for line in readfile1:
         line = line.rstrip()
         selected_line = line.split("\t")
-        dic_attr[selected_line[0]] = [selected_line[1], selected_line[2], selected_line[3], selected_line[4], selected_line[5]]
+        dic_attr[selected_line[0]] = [selected_line[1], selected_line[2],
+                                     selected_line[3], selected_line[4],
+                                     selected_line[5], selected_line[6],
+                                     selected_line[7]]
 
     transform(readfile2, outfile1, dic_attr)
 
@@ -63,21 +68,45 @@ def transform(readfile, outfile, dic):
         elif re.match("^PRIMER_PAIR_\d_PRODUCT_SIZE=\d", line):
             out.append(line.split("=")[1])
 
+            # Declaring Amplicon size
+            ampl_size = out[4]
+            # Declaring allele used for amplicon design
+            ampl_allele = dic[id][0].split(")")[1]
+            #Sequence ID
             out.append(dic[id][0])
-            out.append(dic[id][4])
+            #Amplicon start position
             start = int(dic[id][1])
+            #Amplicon end position
             end = int(dic[id][2])
-            cluster = dic[id][3]
+
+            #String construction of possible amplicon size range
+            ampl_min = amplicon_calc(ampl_size, ampl_allele, dic[id][4])
+            ampl_max = amplicon_calc(ampl_size, ampl_allele, dic[id][5])
+            ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]" + dic[id][6]
 
             good_left = int(left_ini) + int(left_len)
             good_right = int(right_ini)
 
+            #Output construction
             if (good_left < start) and (good_right > end):
-                out = list(out[i] for i in [4,0,2,1,3,5,6])
-                out = [str(id)] + out
+                out = list(out[i] for i in [4,0,2,1,3,5])
+                out = [id] + out + [ampl_range]
                 outfile.write("\t".join(out))
                 if count == 0 :
                     outfile.write("\t| BEST |" )
                     count  = 1
                 outfile.write("\n")
             out = []
+
+# Calculation of the size range of the amplicon
+def amplicon_calc (ampl_size, ampl_allele, allele):
+
+    #Convert all arguments to int
+    ampl_size, ampl_allele, allele = int(ampl_size), int(ampl_allele), int(allele)
+
+    # Add or subtract if alleles are bigger or smaller than base allele
+    if allele > ampl_allele:
+        ampl_result = ampl_size + (abs(ampl_allele - allele) * 2)
+    else:
+        ampl_result = ampl_size - (abs(ampl_allele - allele) * 2)
+    return ampl_result

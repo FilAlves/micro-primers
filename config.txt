@@ -8,8 +8,8 @@
 
 #Input files
 
-INPUT_FILES_R1=morcegos_R1.fastq
-INPUT_FILES_R2=morcegos_R2.fastq
+INPUT_FILES_R1=bats_R1.fastq
+INPUT_FILES_R2=bats_R2.fastq
 
 #CUTADAPT
 

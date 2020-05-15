@@ -162,7 +162,7 @@ def name(file_name):
 def output():
     print('Selecting best primers...')
     print('Creating final file...')
-    pre_primer.final_primers(".temp/selected_micros_out_tabs.txt", ".temp/primer3_out.primers", name(settings[0]) )
+    pre_primer.final_primers(".temp/selected_micros_out_tabs.txt", ".temp/primer3_out.primers", name(settings[0]), settings[11])
 
 #Removal of .temp directory
 def junk():
@@ -188,6 +188,6 @@ primer3_input()
 size_check(int(settings[8]))
 primer3(settings[10])
 output()
-#junk()
+junk()
 
 print('Done!')

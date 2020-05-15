@@ -31,10 +31,13 @@ EXC_MOTIF_TYPE=c,c*,p1
 MIN_ALLEL_CNT=5
 
 #Special search, for when the number of alleles in each cluster doesn't surpass the minimum. If this option is active MIN_ALLEL_CNT is not taken into account. (1 - ACTIVE; 0 - DISABLE)
-MIN_ALLEL_SPECIAL=1
+MIN_ALLEL_SPECIAL=0
 
 #Minimum difference between allele with higher number of repeats and the allele with less number of repeats
 MIN_ALLEL_SPECIAL_DIF=8
 
 #PRIMER3
 PRIMER3_SETTINGS=primer3_setting.txt
+
+#Generated Primer ID Prefix
+ID=

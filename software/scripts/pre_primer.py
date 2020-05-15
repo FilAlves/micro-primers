@@ -21,11 +21,11 @@ def pseudofasta(rf1, rf2, of1):
 
     outfile1.close()
 
-def final_primers(rf1, rf2, of1):
+def final_primers(rf1, rf2, of1, prefix):
 
     readfile1 = open(rf1, "r")
     readfile2 = open(rf2, "r")
-    outfile1 = open(of1, "w")
+    outfile1 = open(".temp/final_primers_temp.txt", "w")
 
     out = []
     dic_attr = {}
@@ -43,6 +43,22 @@ def final_primers(rf1, rf2, of1):
     readfile1.close()
     readfile2.close()
     outfile1.close()
+
+    temp_outfile1 = open(".temp/final_primers_temp.txt","r")
+    outfile2 = open(of1, "w")
+
+    id = prefix
+    id_count = 0
+
+    outfile2.write("ID\tSize\tLeft Primer\tLeft Primer Tm\tRight Primer\tRight Primer Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
+    for line in sorted(temp_outfile1, key=lambda line: int(line.split("\t")[8]), reverse = True):
+            if len(id) > 0:
+                line = line.split("\t")
+                line[0] = id + "_" + str(id_count)
+                line = "\t".join(line)
+                id_count +=1
+            outfile2.write(line)
+
 
 def transform(readfile, outfile, dic):
     out = []
@@ -79,10 +95,13 @@ def transform(readfile, outfile, dic):
             #Amplicon end position
             end = int(dic[id][2])
 
+            possible_alleles = int(dic[id][5]) - int(dic[id][4])
+            alleles_found = dic[id][6]
+
             #String construction of possible amplicon size range
             ampl_min = amplicon_calc(ampl_size, ampl_allele, dic[id][4])
             ampl_max = amplicon_calc(ampl_size, ampl_allele, dic[id][5])
-            ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]" + dic[id][6]
+            ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]"
 
             good_left = int(left_ini) + int(left_len)
             good_right = int(right_ini)
@@ -90,7 +109,7 @@ def transform(readfile, outfile, dic):
             #Output construction
             if (good_left < start) and (good_right > end):
                 out = list(out[i] for i in [4,0,2,1,3,5])
-                out = [id] + out + [ampl_range]
+                out = [id] + out + [ampl_range] + [alleles_found] +[str(possible_alleles)]
                 outfile.write("\t".join(out))
                 if count == 0 :
                     outfile.write("\t| BEST |" )

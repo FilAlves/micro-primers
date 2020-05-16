@@ -128,7 +128,6 @@ def amplicon_calc (ampl_size, ampl_allele, allele, motif):
 
     #Caluclate motif lengths
     motif_len = len( motif.split(")")[0]) - 1
-    print(motif_len)
 
     # Add or subtract if alleles are bigger or smaller than base allele
     if allele > ampl_allele:

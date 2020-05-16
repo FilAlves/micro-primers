@@ -95,12 +95,15 @@ def transform(readfile, outfile, dic):
             #Amplicon end position
             end = int(dic[id][2])
 
-            possible_alleles = int(dic[id][5]) - int(dic[id][4])
+            possible_alleles = (int(dic[id][5]) - int(dic[id][4])) + 1
             alleles_found = dic[id][6]
 
+            # Allele motif for amplican range calculation
+            motif = out[5]
+
             #String construction of possible amplicon size range
-            ampl_min = amplicon_calc(ampl_size, ampl_allele, dic[id][4])
-            ampl_max = amplicon_calc(ampl_size, ampl_allele, dic[id][5])
+            ampl_min = amplicon_calc(ampl_size, ampl_allele, dic[id][4], motif)
+            ampl_max = amplicon_calc(ampl_size, ampl_allele, dic[id][5], motif)
             ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]"
 
             good_left = int(left_ini) + int(left_len)
@@ -118,14 +121,18 @@ def transform(readfile, outfile, dic):
             out = []
 
 # Calculation of the size range of the amplicon
-def amplicon_calc (ampl_size, ampl_allele, allele):
+def amplicon_calc (ampl_size, ampl_allele, allele, motif):
 
     #Convert all arguments to int
     ampl_size, ampl_allele, allele = int(ampl_size), int(ampl_allele), int(allele)
 
+    #Caluclate motif lengths
+    motif_len = len( motif.split(")")[0]) - 1
+    print(motif_len)
+
     # Add or subtract if alleles are bigger or smaller than base allele
     if allele > ampl_allele:
-        ampl_result = ampl_size + (abs(ampl_allele - allele) * 2)
+        ampl_result = ampl_size + (abs(ampl_allele - allele) * motif_len)
     else:
-        ampl_result = ampl_size - (abs(ampl_allele - allele) * 2)
+        ampl_result = ampl_size - (abs(ampl_allele - allele) * motif_len)
     return ampl_result

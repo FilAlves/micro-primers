@@ -40,4 +40,4 @@ MIN_ALLEL_SPECIAL_DIF=8
 PRIMER3_SETTINGS=primer3_setting.txt
 
 #Generated Primer ID Prefix
-ID=
+ID=BATS

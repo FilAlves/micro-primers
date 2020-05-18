@@ -48,15 +48,19 @@ def final_primers(rf1, rf2, of1, prefix):
     outfile2 = open(of1, "w")
 
     id = prefix
-    id_count = 0
+    id_set = 0
+    id_pair = 1
 
-    outfile2.write("ID\tSize\tLeft Primer\tLeft Primer Tm\tRight Primer\tRight Primer Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
+    outfile2.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
     for line in sorted(temp_outfile1, key=lambda line: int(line.split("\t")[8]), reverse = True):
             if len(id) > 0:
                 line = line.split("\t")
-                line[0] = id + "_" + str(id_count)
+                if len(line) > 10 :
+                    id_pair = 1
+                    id_set +=1
+                line[0] = id + "_Set" + str(id_set) + "_Pair" + str(id_pair)
                 line = "\t".join(line)
-                id_count +=1
+                id_pair += 1
             outfile2.write(line)
 
 

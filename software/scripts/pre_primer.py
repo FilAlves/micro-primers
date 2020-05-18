@@ -25,7 +25,7 @@ def final_primers(rf1, rf2, of1, prefix):
 
     readfile1 = open(rf1, "r")
     readfile2 = open(rf2, "r")
-    outfile1 = open(".temp/final_primers_temp.txt", "w")
+    outfile1 = open(of1, "w")
 
     out = []
     dic_attr = {}
@@ -40,18 +40,11 @@ def final_primers(rf1, rf2, of1, prefix):
 
     final_matrix = transform(readfile2, outfile1, dic_attr)
 
-    readfile1.close()
-    readfile2.close()
-    outfile1.close()
-
-    #temp_outfile1 = open(".temp/final_primers_temp.txt","r")
-    outfile2 = open(of1, "w")
-
     id = prefix
     id_set = 0
     id_pair = 1
 
-    outfile2.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
+    outfile1.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
     for line in sorted(final_matrix, key=lambda line: int(line[8]), reverse = True):
             if len(id) > 0:
                 if len(line) > 10 :
@@ -60,8 +53,11 @@ def final_primers(rf1, rf2, of1, prefix):
                 line[0] = id + "_Set" + str(id_set) + "_Pair" + str(id_pair)
                 line = "\t".join(line)
                 id_pair += 1
-            outfile2.write(line)
+            outfile1.write(line)
 
+    readfile1.close()
+    readfile2.close()
+    outfile1.close()
 
 def transform(readfile, outfile, dic):
     out = []

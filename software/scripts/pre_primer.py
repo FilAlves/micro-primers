@@ -38,13 +38,13 @@ def final_primers(rf1, rf2, of1, prefix):
                                      selected_line[5], selected_line[6],
                                      selected_line[7]]
 
-    transform(readfile2, outfile1, dic_attr)
+    final_matrix = transform(readfile2, outfile1, dic_attr)
 
     readfile1.close()
     readfile2.close()
     outfile1.close()
 
-    temp_outfile1 = open(".temp/final_primers_temp.txt","r")
+    #temp_outfile1 = open(".temp/final_primers_temp.txt","r")
     outfile2 = open(of1, "w")
 
     id = prefix
@@ -52,9 +52,8 @@ def final_primers(rf1, rf2, of1, prefix):
     id_pair = 1
 
     outfile2.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
-    for line in sorted(temp_outfile1, key=lambda line: int(line.split("\t")[8]), reverse = True):
+    for line in sorted(final_matrix, key=lambda line: int(line[8]), reverse = True):
             if len(id) > 0:
-                line = line.split("\t")
                 if len(line) > 10 :
                     id_pair = 1
                     id_set +=1
@@ -66,6 +65,7 @@ def final_primers(rf1, rf2, of1, prefix):
 
 def transform(readfile, outfile, dic):
     out = []
+    final_matrix = []
     for line in readfile:
         line = line.rstrip()
         if re.match("^SEQUENCE_ID", line):
@@ -114,15 +114,17 @@ def transform(readfile, outfile, dic):
             good_right = int(right_ini)
 
             #Output construction
-            if (good_left < start) and (good_right > end):
+            if  (good_left < start) and (good_right > end):
                 out = list(out[i] for i in [4,0,2,1,3,5])
                 out = [id] + out + [ampl_range] + [alleles_found] +[str(possible_alleles)]
-                outfile.write("\t".join(out))
                 if count == 0 :
-                    outfile.write("\t| BEST |" )
+                    out.append("| BEST |\n" )
                     count  = 1
-                outfile.write("\n")
+                else:
+                    out[len(out) - 1] = out[len(out) - 1] + "\n"
+                final_matrix.append(out)
             out = []
+    return(final_matrix)
 
 # Calculation of the size range of the amplicon
 def amplicon_calc (ampl_size, ampl_allele, allele, motif):

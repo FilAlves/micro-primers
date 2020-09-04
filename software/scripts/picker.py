@@ -86,7 +86,7 @@ def allele(rf1,
     dic_writer(readfile1, dic_pool)
     allele_finder(dic_pool, dic_allele, MIN_ALLELE_SPECIAL)
 
-    if MIN_ALLELE_SPECIAL == 0:
+    if not MIN_ALLELE_SPECIAL:
         for cluster in dic_allele.keys():
             if len(dic_allele[cluster]) < MIN_ALLELE_CNT:
                 cluster_exclude.append(cluster)

@@ -5,6 +5,7 @@ os.system("sudo apt-get install build-essential")
 os.system("sudo apt-get install zlib1g")
 os.system("sudo apt-get install zlib1g-dev")
 os.system("sudo apt-get install default-jre")
+os.system("sudo pip3 install wxpython")
 
 os.system("sed -i -e 's/CC_OPTS    = -g -Wall -D__USE_FIXED_PROTOTYPES__/CC_OPTS = -g -Wall -D__USE_FIXED_PROTOTYPES_ -fpermissive/' software/primer3/src/Makefile")
 

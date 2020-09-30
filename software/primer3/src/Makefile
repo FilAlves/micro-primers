@@ -56,7 +56,7 @@ AR         = ar
 CC         = gcc
 CPP        = g++
 O_OPTS     = -O2
-CC_OPTS    = -g -Wall -D__USE_FIXED_PROTOTYPES__
+CC_OPTS = -g -Wall -D__USE_FIXED_PROTOTYPES_ -fpermissive
 P_DEFINES  =
 
 CFLAGS  = $(CC_OPTS) $(O_OPTS)

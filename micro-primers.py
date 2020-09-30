@@ -37,7 +37,7 @@ class TabCutadapt(wx.Panel):
 
         global cut3, cut5
 
-        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        gridSizer = wx.GridBagSizer(hgap=5, vgap=5)
         sizerCut_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizerCut_5 = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -53,10 +53,10 @@ class TabCutadapt(wx.Panel):
         sizerCut_5.Add(cutLabel_5)
         sizerCut_5.Add(self.cutText_5)
 
-        mainSizer.Add(sizerCut_3)
-        mainSizer.Add(sizerCut_5)
+        gridSizer.Add(sizerCut_3, pos=(0,0))
+        gridSizer.Add(sizerCut_5, pos=(1,0))
 
-        self.SetSizer(mainSizer)
+        self.SetSizer(gridSizer)
         self.Layout()
 
 
@@ -67,12 +67,12 @@ class TabPrimer(wx.Panel):
         global exclude, primer3, minFlank, minMotif
 
 
-        gridSizer = wx.GridBagSizer(hgap=5, vgap=5)
+        gridSizer = wx.GridBagSizer(hgap=2, vgap=5)
         sizerExclude = wx.BoxSizer(wx.HORIZONTAL)
         sizerPrimer3 = wx.BoxSizer(wx.HORIZONTAL)
 
 
-        excludeLabel = wx.StaticText(self, wx.ID_ANY, "Primers types to be excluded: ")
+        self.excludeLabel = wx.StaticText(self, wx.ID_ANY, "Primers types to be excluded: ")
         self.excludeText = wx.TextCtrl(self, wx.ID_ANY, value = exclude, size=(220, 30))
 
         primer3Label = wx.StaticText(self, wx.ID_ANY, "Primer3 setting file:")
@@ -83,13 +83,13 @@ class TabPrimer(wx.Panel):
                   primer3Button)
 
 
-        sizerExclude.Add(excludeLabel, wx.ALIGN_CENTER)
-        sizerExclude.Add(self.excludeText)
+        sizerExclude.Add(self.excludeLabel, wx.ALIGN_CENTER)
+        #sizerExclude.Add(self.excludeText)
 
         sizerPrimer3.Add(self.primer3Text,wx.ALL | wx.ALIGN_CENTER)
         sizerPrimer3.Add(primer3Button)
 
-        gridSizer.Add(excludeLabel, pos=(0, 0))
+        gridSizer.Add(sizerExclude, pos=(0, 0))
         gridSizer.Add(self.excludeText, pos=(0, 1))
         gridSizer.Add(primer3Label, pos=(1, 0))
         gridSizer.Add(sizerPrimer3, pos=(1, 1))
@@ -175,6 +175,7 @@ class FrameSettings(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         self.panel.SetSizer(sizer)
+
 
     def OnClose(self, event):
         global cut3, cut5, exclude, primer3, minFlank, minMotif, minCnt, minDiff, special
@@ -291,7 +292,7 @@ class MyFrame(wx.Frame):
         print(r1, r2, cut3, cut5, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3)
 
         #Progress Bar
-        progress = wx.ProgressDialog("Micro-Primers is thinking!", "Creating Folders...", maximum=17, parent=self, style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_CAN_ABORT)
+        progress = wx.ProgressDialog("Micro-Primers is thinking!", "Creating Folders...", maximum=18, parent=self, style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_CAN_ABORT)
 
         # Pipeline
         self.folder([".temp/", "logs/"])
@@ -330,9 +331,9 @@ class MyFrame(wx.Frame):
         progress.Update(16, newmsg='Selecting best primers...')
         self.output()
         progress.Update(17, newmsg='Removing temporary files...')
-        #self.junk()
-        progress.Update(17, newmsg='Done! You can close the window!')
-        del progress
+        self.junk()
+        progress.Update(18, newmsg='Done! You can close the window!')
+        #del progress
         print('Done!')
 
     def get_path(self, event, box):

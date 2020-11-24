@@ -1,6 +1,6 @@
 
 from software.scripts import picker, text_manip, pre_primer
-import sys, wx, os, time
+import sys, wx, os, time, threading
 
 def micro_primers_system_call(cmd, erro):
     rvalue = os.system(cmd) # returns the exit code
@@ -104,11 +104,6 @@ class TabPrimer(wx.Panel):
             box.write(path)
         test_dir.Destroy()
 
-    # def run(self, event):
-    #     global cut3
-    #     # test_out = app.frame.settings.tabAllele.cntText.GetValue()
-    #     print(cut3)
-
 
 class TabAlleles(wx.Panel):
     def __init__(self, parent):
@@ -195,16 +190,23 @@ class FrameSettings(wx.Frame):
         self.Destroy()
 
 class MyFrame(wx.Frame):
-    def __init__(self, parent=None, title="teste frame", id=-1):
+
+    step = 0
+    running = True
+
+    def __init__(self, parent=None, title="Micro-Primers", id=-1):
         wx.Frame.__init__(self, parent, id, title, size=(600, 500))
 
         self.panel = MyPanel(self)
 
         menuBar = wx.MenuBar()
-        menuBar.Append(wx.Menu(), "&File")
-        menuBar.Append(wx.Menu(), "&About")
+
+        helpm = wx.Menu()
+        helpm.Append(wx.ID_ABOUT, "About")
+        menuBar.Append(helpm, "&Help")
 
         self.SetMenuBar(menuBar)
+        self.Bind(wx.EVT_MENU, self.onMenu)        
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizerR1 = wx.BoxSizer(wx.HORIZONTAL)
@@ -241,21 +243,6 @@ class MyFrame(wx.Frame):
 
         sizer.Add(labelTitle, 0, wx.CENTER | wx.TOP | wx.BOTTOM, 20)
 
-        # sizerR1.Add(self.labelR1)
-        # sizerR1.Add(self.textR1)
-        # sizerR1.Add(self.buttonR1)
-        #
-        # sizerR2.Add(self.labelR2)
-        # sizerR2.Add(self.textR2)
-        # sizerR2.Add(self.buttonR2)
-        #
-        # sizerPre.Add(self.labelPre)
-        # sizerPre.Add(self.textPre)
-
-        # sizer.Add(sizerR1, 0, wx.CENTER)
-        # sizer.Add(sizerR2, 0, wx.CENTER)
-        # sizer.Add(sizerPre, 0, wx.CENTER)
-
         gridSizer.Add(self.labelR1, pos=(0,0))
         gridSizer.Add(self.textR1, pos=(0,1))
         gridSizer.Add(self.buttonR1, pos=(0,2))
@@ -273,6 +260,13 @@ class MyFrame(wx.Frame):
 
         self.SetSizer(sizer)
         self.Layout()
+        
+    def onMenu(self, event):
+        evt_id = event.GetId()
+        if evt_id == wx.ID_ABOUT:
+            self.panel = AboutFrame(self)
+            self.panel.Show(True)
+            return True
 
     def settings(self, event):
         self.settings = FrameSettings()
@@ -280,8 +274,8 @@ class MyFrame(wx.Frame):
         return True
 
     def run(self, event):
-        global r1, cut3, cut5, exclude, primer3, minFlank, minMotif, minCnt, minDiff, special, preffix
-
+        global r1, r2, cut3, cut5, exclude, primer3, minFlank, minMotif, minCnt, minDiff, special, preffix, preffix, badSSR
+        running = True
         r1 = self.textR1.GetValue()
         r2 = self.textR2.GetValue()
         preffix = self.textPre.GetValue()
@@ -292,48 +286,98 @@ class MyFrame(wx.Frame):
         print(r1, r2, cut3, cut5, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3)
 
         #Progress Bar
-        progress = wx.ProgressDialog("Micro-Primers is thinking!", "Creating Folders...", maximum=18, parent=self, style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_CAN_ABORT)
+        self.progress = wx.ProgressDialog("Processing...", "Creating Folders...", maximum=18, parent=self, style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_CAN_ABORT)
+        
+        workThread_pipeline = threading.Thread(target=self.pipeline)
+        workThread_updater = threading.Thread(target=self.updater)
+        workThread_pipeline.start()
+        workThread_updater.start()
+        
+    def updater(self):
+        while self.running == True:
+            time.sleep(1)
+            wx.CallAfter(self.progress.Update, self.step)
 
-        # Pipeline
+        #self.progress.ShowModal()
+        
+    # Pipeline
+    def pipeline(self):
         self.folder([".temp/", "logs/"])
-        progress.Update(1, newmsg='Trimmomatic working...')
+
+        wx.CallAfter(self.progress.Update, 1, 'Trimmomatic working...')
+        self.step = 1
         self.trimmomatic(r1, r2)
-        progress.Update(2, newmsg='Cutadapt working...')
+        
+        wx.CallAfter(self.progress.Update, 2, newmsg='Cutadapt working...')
+        self.step = 2
         self.cutadapt(cut3, cut5)
-        progress.Update(3, newmsg='Flash working...')
+        
+        wx.CallAfter(self.progress.Update, 3, newmsg='Flash working...')
+        self.step = 3
         self.flash()
-        progress.Update(4, newmsg='Selecting sequences with restriction enzime patterns...')
+        
+        wx.CallAfter(self.progress.Update, 4, newmsg='Selecting sequences with restriction enzime patterns...')
+        self.step = 4
         self.python_grep()
-        progress.Update(5, newmsg='Adding ids...\nCalculating sequences lengths...')
+        
+        wx.CallAfter(self.progress.Update, 5, newmsg='Adding ids and Calculating sequences lengths...')
+        self.step = 5
         self.ids_and_len()
-        progress.Update(6, newmsg='Misa working...')
+        
+        wx.CallAfter(self.progress.Update, 6, newmsg='Misa working...')
+        self.step = 6
         self.misa()
-        progress.Update(7, newmsg='Adding length to misa output...')
+
+        wx.CallAfter(self.progress.Update, 7, newmsg='Adding length to misa output...')
+        self.step = 7
         self.length_merger()
-        progress.Update(8, newmsg ='Selecting good microsatellites...')
+
+        wx.CallAfter(self.progress.Update, 8, newmsg ='Selecting good microsatellites...')
+        self.step = 8
         self.good_micros(int(50), int(5), badSSR)
-        progress.Update(9, newmsg='splitSSR working...')
+
+        wx.CallAfter(self.progress.Update, 9, newmsg='splitSSR working...')
+        self.step = 9
         self.splitSSR()
-        progress.Update(10, newmsg='CD-HIT working...')
+
+        wx.CallAfter(self.progress.Update, 10, newmsg='CD-HIT working...')
+        self.step = 10
         self.cdhit()
-        progress.Update(11, newmsg='Calculating number of sequences for each cluster...')
+
+        wx.CallAfter(self.progress.Update, 11, newmsg='Calculating number of sequences for each cluster...')
+        self.step = 11
         self.cluster()
-        progress.Update(12, newmsg='Adding information to the table of microsatellites...')
+
+        wx.CallAfter(self.progress.Update, 12, newmsg='Adding information to the table of microsatellites...')
+        self.step = 12
         self.cluster_info()
         self.cluster_filter(int(minCnt), special, int(minDiff))
-        progress.Update(13, newmsg='Selecting one sequence per cluster...')
+
+        wx.CallAfter(self.progress.Update, 13, newmsg='Selecting one sequence per cluster...')
+        self.step = 13
         self.selected_micros()
-        progress.Update(14, newmsg='Creating Primer3 input file...')
+
+        wx.CallAfter(self.progress.Update, 14, newmsg='Creating Primer3 input file...')
+        self.step = 14
         self.primer3_input()
         self.size_check(special)
-        progress.Update(15, newmsg='Creating Primers...')
+
+        wx.CallAfter(self.progress.Update, 15, newmsg='Creating Primers...')
+        self.step = 15
         self.primer3(primer3)
-        progress.Update(16, newmsg='Selecting best primers...')
+
+        wx.CallAfter(self.progress.Update, 16, newmsg='Selecting best primers...')
+        self.step = 16
         self.output()
-        progress.Update(17, newmsg='Removing temporary files...')
-        self.junk()
-        progress.Update(18, newmsg='Done! You can close the window!')
-        #del progress
+
+        wx.CallAfter(self.progress.Update, 17, newmsg='Removing temporary files...')
+        self.step = 17
+        #self.junk()
+
+        wx.CallAfter(self.progress.Update, 18, newmsg='Done! You can close the window!')
+        self.step = 18
+        self.running = False
+        #self.progress.Destroy()
         print('Done!')
 
     def get_path(self, event, box):
@@ -501,6 +545,36 @@ class MyFrame(wx.Frame):
         rvalue = os.system(cmd)  # returns the exit code
         if rvalue != 0:
             sys.exit(erro)
+
+class AboutFrame(wx.Frame):
+    def __init__(self,parent=None, title="About", id=-1):
+        wx.Frame.__init__(self, parent, id, title, size=(450,250))
+        #self.panel = MyPanel(self)
+
+        boxSizer = wx.BoxSizer(wx.VERTICAL)
+        authorSizer = wx.BoxSizer(wx.VERTICAL)
+
+        whatLabel = wx.StaticText(self, wx.ID_ANY, "Micro-Primers - Design primers for microsattelite amplification")
+        versionLabel = wx.StaticText(self, wx.ID_ANY, "Version: 1.0")
+        author1Label = wx.StaticText(self, wx.ID_ANY, "Author(s):")
+        author2Label = wx.StaticText(self, wx.ID_ANY, "Filipe Alves,  MSc")
+        author3Label = wx.StaticText(self, wx.ID_ANY, "António Mérida Muñoz, PhD, CIBIO - inBIO")
+        author4Label = wx.StaticText(self, wx.ID_ANY, "Miguel Areias, PhD, University of Porto - Faculty of Science ")
+
+        authorSizer.Add(author1Label, 0, wx.ALIGN_CENTER)
+        authorSizer.Add(author2Label, 0, wx.ALIGN_CENTER)
+        authorSizer.Add(author3Label, 0, wx.ALIGN_CENTER)
+        authorSizer.Add(author4Label, 0, wx.ALIGN_CENTER)
+
+        boxSizer.AddSpacer(20)
+        boxSizer.Add(whatLabel, 0, wx.ALIGN_CENTER)
+        boxSizer.AddSpacer(50)
+        boxSizer.Add(versionLabel, 0, wx.ALIGN_CENTER)
+        boxSizer.AddSpacer(50)
+        boxSizer.Add(authorSizer, 0, wx.ALIGN_CENTER)
+
+        self.SetSizer(boxSizer)
+        self.Layout()
 
 class MyApp(wx.App):
     def OnInit(self):

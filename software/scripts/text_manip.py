@@ -202,13 +202,37 @@ def length_merger(rf1, rf2, of1):
 
     outfile1.close()
 
-def python_grep(rf1, of1):
+def python_grep(rf1, of1, grep):
     readfile1 = open(rf1, "r")
     outfile1 = open(of1, "w")
 
+    pattern = "^" + grep + "\w*" + grep + "$"
+
     for line in readfile1:
-        pattern = r'^GATC\w*GATC$'
         goal = re.match(pattern, line)
         if goal:
-            print(re.sub("^@",">",prev_line) + goal.group(0), file=outfile1)
+            print(re.sub("^@", ">", prev_line) + goal.group(0), file=outfile1)
         prev_line = line
+
+def fastqToFasta(rf1, of1):
+    readfile1 = open(rf1, "r")
+    outfile1 = open(of1, "w")
+
+    line_n = 0
+    line_id = 1
+
+    for line in readfile1:
+        line_n += 1
+        if line_id == 4:
+            line_id = 1
+        elif line_id == 3:
+            line_id += 1
+        elif line_id == 2:
+            line_id += 1
+            fasta_line = line
+            outfile1.write(fasta_line)
+        else:
+            fasta_header = line.replace('@', '>')
+            line_id += 1
+            outfile1.write(fasta_header)
+    outfile1.close()

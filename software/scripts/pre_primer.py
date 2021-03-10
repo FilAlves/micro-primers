@@ -1,5 +1,6 @@
 import re
 
+
 def pseudofasta(rf1, rf2, of1):
 
     readfile1 = open(rf1, "r")
@@ -21,6 +22,7 @@ def pseudofasta(rf1, rf2, of1):
 
     outfile1.close()
 
+
 def final_primers(rf1, rf2, of1, prefix):
 
     readfile1 = open(rf1, "r")
@@ -41,16 +43,16 @@ def final_primers(rf1, rf2, of1, prefix):
     final_matrix = transform(readfile2, outfile1, dic_attr)
 
     id = prefix
-    id_set = 0
+    id_loci = 0
     id_pair = 1
 
-    outfile1.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\n")
+    outfile1.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\tSequence\n")
     for line in sorted(final_matrix, key=lambda line: int(line[8]), reverse = True):
             if len(id) > 0:
                 if len(line) > 10 :
                     id_pair = 1
-                    id_set +=1
-                line[0] = id + "_Set" + str(id_set) + "_Pair" + str(id_pair)
+                    id_loci +=1
+                line[0] = id + "_Loci" + str(id_loci) + "_Pair" + str(id_pair)
                 line = "\t".join(line)
                 id_pair += 1
             outfile1.write(line)
@@ -59,49 +61,74 @@ def final_primers(rf1, rf2, of1, prefix):
     readfile2.close()
     outfile1.close()
 
+
 def transform(readfile, outfile, dic):
     out = []
     final_matrix = []
     for line in readfile:
         line = line.rstrip()
+
+        # ID
         if re.match("^SEQUENCE_ID", line):
             id = line.split("=")[1]
             count = 0
+
+        # DNA sequence
+        elif re.match("^SEQUENCE_TEMPLATE", line):
+            sequence = line.split("=")[1]
+
+        # Left primer sequence
         elif re.match("^PRIMER_LEFT_\d_SEQUENCE", line):
             out.append(line.split("=")[1])
+
+        # Right primer sequence
         elif re.match("^PRIMER_RIGHT_\d_SEQUENCE", line):
             out.append(line.split("=")[1])
+
+        # Left primer Tm
         elif re.match("^PRIMER_LEFT_\d_TM", line):
             out.append(line.split("=")[1])
+
+        # Right primer Tm
         elif re.match("^PRIMER_RIGHT_\d_TM=", line):
             out.append(line.split("=")[1])
+
+        # Left primer start position and length
         elif re.match("^PRIMER_LEFT_\d=(\d*),(\d*)", line):
             next = line.split("=")[1]
             left_ini, left_len = next.split(",")
+
+        # Right primer start position and length
         elif re.match("^PRIMER_RIGHT_\d=(\d*),(\d*)", line):
             next = line.split("=")[1]
             right_ini, right_len = next.split(",")
+
+        # Amplicon size
         elif re.match("^PRIMER_PAIR_\d_PRODUCT_SIZE=\d", line):
             out.append(line.split("=")[1])
 
+            print(out)
             # Declaring Amplicon size
             ampl_size = out[4]
             # Declaring allele used for amplicon design
             ampl_allele = dic[id][0].split(")")[1]
-            #Sequence ID
+
+            # Sequence ID
             out.append(dic[id][0])
-            #Amplicon start position
+
+            # Amplicon start position
             start = int(dic[id][1])
-            #Amplicon end position
+
+            # Amplicon end position
             end = int(dic[id][2])
 
             possible_alleles = (int(dic[id][5]) - int(dic[id][4])) + 1
             alleles_found = dic[id][6]
 
-            # Allele motif for amplican range calculation
+            # Allele motif for amplicon range calculation
             motif = out[5]
 
-            #String construction of possible amplicon size range
+            # String construction of possible amplicon size range
             ampl_min = amplicon_calc(ampl_size, ampl_allele, dic[id][4], motif)
             ampl_max = amplicon_calc(ampl_size, ampl_allele, dic[id][5], motif)
             ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]"
@@ -109,27 +136,28 @@ def transform(readfile, outfile, dic):
             good_left = int(left_ini) + int(left_len)
             good_right = int(right_ini)
 
-            #Output construction
-            if  (good_left < start) and (good_right > end):
-                out = list(out[i] for i in [4,0,2,1,3,5])
-                out = [id] + out + [ampl_range] + [alleles_found] +[str(possible_alleles)]
-                if count == 0 :
-                    out.append("| BEST |\n" )
-                    count  = 1
+            # Output construction
+            if (good_left < start) and (good_right > end):
+                out = list(out[i] for i in [4, 0, 2, 1, 3, 5])
+                out = [id] + out + [ampl_range] + [alleles_found] + [str(possible_alleles)]
+                if count == 0:
+                    out.append("| BEST |\t" + sequence + "\n")
+                    count = 1
                 else:
-                    out[len(out) - 1] = out[len(out) - 1] + "\n"
+                    out.append("\t" + sequence + "\n")
                 final_matrix.append(out)
             out = []
-    return(final_matrix)
+    return final_matrix
+
 
 # Calculation of the size range of the amplicon
-def amplicon_calc (ampl_size, ampl_allele, allele, motif):
+def amplicon_calc(ampl_size, ampl_allele, allele, motif):
 
-    #Convert all arguments to int
+    # Convert all arguments to int
     ampl_size, ampl_allele, allele = int(ampl_size), int(ampl_allele), int(allele)
 
-    #Caluclate motif lengths
-    motif_len = len( motif.split(")")[0]) - 1
+    # Calculate motif lengths
+    motif_len = len(motif.split(")")[0]) - 1
 
     # Add or subtract if alleles are bigger or smaller than base allele
     if allele > ampl_allele:

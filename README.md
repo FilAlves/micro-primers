@@ -14,8 +14,17 @@ For any questions please send an email to filipealvesbio@gmail.com
 ## Installation (linux)
 
 1. Using the terminal, clone the repository using the command `git clone https://github.com/FilAlves/micro-primers`;
-2. Install suing the command `sudo python3 ~/micro-primers/install.py`;
-3. Configure config.txt .
+2. Install Conda (https://docs.conda.io/en/latest/miniconda.html);
+3. Create conda environment with micro-primers requirements (located in the cloned repository) `conda env create -f micro-primers/conda_requirements.yml`;
+4. Activate conda environment `conda activate micro-primers`;
+5. Install other necessary software `python3 setup.py`.
+
+## Usage
+
+To use micro-primers:
+
+1. Activate conda environment `conda activate micro-primers`;
+2. Start micro-primers (on the same terminal window) `python3 micro-primers`;
 
 # The Pipeline
 

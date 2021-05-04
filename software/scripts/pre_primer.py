@@ -42,20 +42,29 @@ def final_primers(rf1, rf2, of1, prefix):
 
     final_matrix = transform(readfile2, outfile1, dic_attr)
 
-    id = prefix
     id_loci = 0
     id_pair = 1
 
     outfile1.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\tSequence\n")
     for line in sorted(final_matrix, key=lambda line: int(line[8]), reverse = True):
-            if len(id) > 0:
-                if len(line) > 10 :
-                    id_pair = 1
-                    id_loci +=1
-                line[0] = id + "_Loci" + str(id_loci) + "_Pair" + str(id_pair)
-                line = "\t".join(line)
-                id_pair += 1
-            outfile1.write(line)
+
+        # Checks if current Loci is new.
+        if line[10][:8:] == "| BEST |":
+
+            # Resets pair (First to be found for the new loci) and increments loci.
+            id_pair = 1
+            id_loci += 1
+
+        # Adds loci and pair id.
+        line[0] = prefix + "_Loci" + str(id_loci) + "_Pair" + str(id_pair)
+        line = "\t".join(line)
+
+        # Increments id_pair
+        id_pair += 1
+
+        outfile1.write(line)
+
+
 
     readfile1.close()
     readfile2.close()
@@ -107,7 +116,7 @@ def transform(readfile, outfile, dic):
         elif re.match("^PRIMER_PAIR_\d_PRODUCT_SIZE=\d", line):
             out.append(line.split("=")[1])
 
-            print(out)
+            #print(out)
             # Declaring Amplicon size
             ampl_size = out[4]
             # Declaring allele used for amplicon design

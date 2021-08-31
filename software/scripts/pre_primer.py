@@ -146,8 +146,7 @@ def transform(readfile, outfile, dic):
             good_right = int(right_ini) - int(right_len)
 
             # Output construction
-            print("GOOD_LEFT: ", good_left, "START: ", start)
-            print("GOOD_RIGHT: ", good_left, "END: ", end)
+
             if (good_left < start) and (good_right > end):
                 out = list(out[i] for i in [4, 0, 2, 1, 3, 5])
                 out = [id] + out + [ampl_range] + [alleles_found] + [str(possible_alleles)]

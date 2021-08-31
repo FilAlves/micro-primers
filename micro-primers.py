@@ -417,7 +417,7 @@ class MyFrame(wx.Frame):
 
         wx.CallAfter(self.progress.Update, 17, newmsg='Removing temporary files...')
         self.step = 17
-        junk()
+        #junk()
 
         wx.CallAfter(self.progress.Update, 18, newmsg='Done! You can close the window!')
         self.step = 18

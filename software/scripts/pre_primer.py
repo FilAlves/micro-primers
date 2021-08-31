@@ -45,7 +45,7 @@ def final_primers(rf1, rf2, of1, prefix):
     id_loci = 0
     id_pair = 1
 
-    outfile1.write("ID\tSize\tFw Primer\tFw Tm\tRv Primer\tRv Tm\tMotif\tAmplicon Amplitude\tAlleles Found\tPotential Alleles\tFlag\tSequence\n")
+    outfile1.write("ID\tSize\tLeft Primer\t Left Tm\tRight Primer\tRight Tm\tMotif\tRange\tAlleles Found\tPotential Alleles\tFlag\tSequence\n")
     for line in sorted(final_matrix, key=lambda line: int(line[8]), reverse = True):
 
         # Checks if current Loci is new.
@@ -143,9 +143,11 @@ def transform(readfile, outfile, dic):
             ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]"
 
             good_left = int(left_ini) + int(left_len)
-            good_right = int(right_ini)
+            good_right = int(right_ini) - int(right_len)
 
             # Output construction
+            print("GOOD_LEFT: ", good_left, "START: ", start)
+            print("GOOD_RIGHT: ", good_left, "END: ", end)
             if (good_left < start) and (good_right > end):
                 out = list(out[i] for i in [4, 0, 2, 1, 3, 5])
                 out = [id] + out + [ampl_range] + [alleles_found] + [str(possible_alleles)]

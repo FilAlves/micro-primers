@@ -1,5 +1,5 @@
 from software.scripts import picker, text_manip, pre_primer
-import sys, wx, os, time, threading, argparse
+import sys, wx, os, time, threading, argparse, subprocess
 
 
 def micro_primers_system_call(cmd, erro):
@@ -11,7 +11,7 @@ def micro_primers_system_call(cmd, erro):
 # Create empty file for importing python scripts
 micro_primers_system_call("touch software/scripts/__init__.py", "Error: could not create init.py.")
 
-global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, r1, out
+global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, r1, out, primer3Filter
 
 class MyPanel(wx.Panel):
     def __init__(self, parent):
@@ -78,9 +78,10 @@ class TabPrimer(wx.Panel):
 
         global exclude, primer3_txt, minFlank, minMotif
 
-        gridSizer = wx.GridBagSizer(hgap=2, vgap=5)
+        gridSizer = wx.GridBagSizer(hgap=3, vgap=5)
         sizerExclude = wx.BoxSizer(wx.HORIZONTAL)
         sizerPrimer3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizerPrimer3Filter = wx.BoxSizer(wx.HORIZONTAL)
 
         self.excludeLabel = wx.StaticText(self, wx.ID_ANY, "Primers types to be excluded: ")
         self.excludeText = wx.TextCtrl(self, wx.ID_ANY, value=exclude, size=(220, 30))
@@ -92,6 +93,10 @@ class TabPrimer(wx.Panel):
                   lambda event, box=self.primer3Text: self.get_path(event, box),
                   primer3Button)
 
+        filterLabel = wx.StaticText(self, wx.ID_ANY, "Filter primers inside SSR: ")
+        self.filterToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
+        self.filterToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggle)
+
         sizerExclude.Add(self.excludeLabel, wx.ALIGN_CENTER)
         # sizerExclude.Add(self.excludeText)
 
@@ -102,9 +107,17 @@ class TabPrimer(wx.Panel):
         gridSizer.Add(self.excludeText, pos=(0, 1))
         gridSizer.Add(primer3Label, pos=(1, 0))
         gridSizer.Add(sizerPrimer3, pos=(1, 1))
+        gridSizer.Add(filterLabel, pos=(2, 0))
+        gridSizer.Add(self.filterToggle, pos=(2, 1))
 
         self.SetSizer(gridSizer)
         self.Layout()
+
+    def onToggle(self, event):
+        if self.filterToggle.GetValue():
+            self.filterToggle.SetLabel("ON")
+        else:
+            self.filterToggle.SetLabel("OFF")
 
     def get_path(self, event, box):
         test_dir = wx.FileDialog(self, "Choose a directory:")
@@ -130,7 +143,7 @@ class TabAlleles(wx.Panel):
         self.motifText = wx.TextCtrl(self, wx.ID_ANY, value=minMotif, size=(220, 30))
 
         specialLabel = wx.StaticText(self, wx.ID_ANY, "Special Search: ")
-        self.specialToggle = wx.ToggleButton(self, wx.ID_ANY, label="Special Search OFF")
+        self.specialToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
         self.specialToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggle)
 
         diffLabel = wx.StaticText(self, wx.ID_ANY, "Minimum distance between alelles (Special Search): ")
@@ -152,9 +165,9 @@ class TabAlleles(wx.Panel):
 
     def onToggle(self, event):
         if self.specialToggle.GetValue():
-            self.specialToggle.SetLabel("Special Search ON")
+            self.specialToggle.SetLabel("ON")
         else:
-            self.specialToggle.SetLabel("Special Search OFF")
+            self.specialToggle.SetLabel("OFF")
 
 
 class FrameSettings(wx.Frame):
@@ -181,7 +194,7 @@ class FrameSettings(wx.Frame):
         self.panel.SetSizer(sizer)
 
     def OnClose(self, event):
-        global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special
+        global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, primer3Filter
 
         cut3 = self.tabPreProcessing.cutText_3.GetValue()
         cut5 = self.tabPreProcessing.cutText_5.GetValue()
@@ -189,6 +202,7 @@ class FrameSettings(wx.Frame):
             grep = ""
         exclude = self.tabPrimer.excludeText.GetValue()
         primer3_txt = self.tabPrimer.primer3Text.GetValue()
+        primer3Filter = self.tabPrimer.filterToggle.GetValue()
         minFlank = self.tabAllele.flankText.GetValue()
         minMotif = self.tabAllele.motifText.GetValue()
         minCnt = self.tabAllele.cntText.GetValue()
@@ -306,7 +320,7 @@ class MyFrame(wx.Frame):
         return True
 
     def run(self, event):
-        global r1, r2, cut3, cut5, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, prefix, badSSR, out
+        global r1, r2, cut3, cut5, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, prefix, badSSR, out, primer3Filter
         self.running = True
         r1 = self.textR1.GetValue()
         r2 = self.textR2.GetValue()
@@ -322,7 +336,7 @@ class MyFrame(wx.Frame):
             badSSR = exclude.split(",")
             micro_primers_system_call("touch software/scripts/__init__.py", "Error: could not create init.py.")
 
-            print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3_txt)
+            print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3_txt, primer3Filter)
 
             # Progress Bar
             self.progress = wx.ProgressDialog("Processing...", "Creating Folders...", maximum=18, parent=self,
@@ -413,7 +427,7 @@ class MyFrame(wx.Frame):
 
         wx.CallAfter(self.progress.Update, 16, newmsg='Selecting best primers...')
         self.step = 16
-        output()
+        output(primer3Filter)
 
         wx.CallAfter(self.progress.Update, 17, newmsg='Removing temporary files...')
         self.step = 17
@@ -609,11 +623,11 @@ def name(file_name):
 
 
 # Selection of primers following laboratory criteria and output formatting
-def output():
+def output(primer3Filter):
     print('Selecting best primers...')
     print('Creating final file...')
     pre_primer.final_primers(".temp/selected_micros_out_tabs.txt", ".temp/primer3_out.primers", name(r1),
-                             prefix)
+                             prefix, primer3Filter)
 
 
 # Removal of .temp directory
@@ -690,7 +704,7 @@ def pipeline_terminal():
     primer3_input()
     size_check(special)
     primer3(primer3_txt)
-    output()
+    output(primer3Filter)
     junk()
     print('Done!')
 
@@ -706,6 +720,7 @@ if len(sys.argv) > 1:
     parser.add_argument("-enz", "--resenzime", metavar="", default="GATC",
                         help="Restriction enzime pattern. Default: GATC.")
     parser.add_argument("-spc", "--special", action="store_true", help="Activates special search. Default: False.")
+    parser.add_argument("-p3f", "--p3filter", action="store_true", help="Filters primers designed inside SSR region. Default: False.")
     parser.add_argument("-p3", "--primer3", metavar="", default="primer3_setting.txt",
                         help="Path to primer3 settings file.")
     parser.add_argument("-c3", "--cutadapt3", metavar="", default="CCAAGCTTCCCGGGTACCGC",
@@ -737,6 +752,7 @@ if len(sys.argv) > 1:
     minCnt = args.mincount
     minDiff = args.mindiff
     special = args.special
+    primer3Filter = args.p3filter
     prefix = args.prefix
     out = args.output
 
@@ -754,6 +770,7 @@ else:
     minCnt = "5"
     minDiff = "8"
     special = False
+    primer3Filter = False
     out = ""
 
     app = MyApp()

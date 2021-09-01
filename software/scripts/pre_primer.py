@@ -23,7 +23,7 @@ def pseudofasta(rf1, rf2, of1):
     outfile1.close()
 
 
-def final_primers(rf1, rf2, of1, prefix):
+def final_primers(rf1, rf2, of1, prefix, primer3Filter):
 
     readfile1 = open(rf1, "r")
     readfile2 = open(rf2, "r")
@@ -40,7 +40,7 @@ def final_primers(rf1, rf2, of1, prefix):
                                      selected_line[5], selected_line[6],
                                      selected_line[7]]
 
-    final_matrix = transform(readfile2, outfile1, dic_attr)
+    final_matrix = transform(readfile2, outfile1, dic_attr, primer3Filter)
 
     id_loci = 0
     id_pair = 1
@@ -71,7 +71,7 @@ def final_primers(rf1, rf2, of1, prefix):
     outfile1.close()
 
 
-def transform(readfile, outfile, dic):
+def transform(readfile, outfile, dic, primer3Filter):
     out = []
     final_matrix = []
     for line in readfile:
@@ -142,11 +142,15 @@ def transform(readfile, outfile, dic):
             ampl_max = amplicon_calc(ampl_size, ampl_allele, dic[id][5], motif)
             ampl_range = "[" + str(ampl_min) + "," + str(ampl_max) + "]"
 
-            good_left = int(left_ini) + int(left_len)
-            good_right = int(right_ini) - int(right_len)
+            # Verify if primers are outside of the SSR
+            if primer3Filter:
+                good_left = int(left_ini) + int(left_len)
+                good_right = int(right_ini) - int(right_len)
+            else:
+                good_left = 0
+                good_right = 10000
 
             # Output construction
-
             if (good_left < start) and (good_right > end):
                 out = list(out[i] for i in [4, 0, 2, 1, 3, 5])
                 out = [id] + out + [ampl_range] + [alleles_found] + [str(possible_alleles)]

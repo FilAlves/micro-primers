@@ -458,7 +458,7 @@ def folder(folders):
 def trimmomatic(R1, R2):
     print('Trimmomatic working...')
     micro_primers_system_call(
-        "java -jar software/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred33 "
+        "trimmomatic PE -phred33 "
         "%s %s "
         ".temp/trim_out_trimmed_R1.fastq .temp/trim_out_unpaired_R1.fastq "
         ".temp/trim_out_trimmed_R2.fastq .temp/trim_out_unpaired_R2.fastq "
@@ -490,7 +490,7 @@ def cutadapt(a, g):
 # Fusion of R1 and R2 files
 def flash():
     print('Flash working...')
-    micro_primers_system_call("software/FLASH-1.2.11/flash "
+    micro_primers_system_call("flash "
                               ".temp/cut_out_nolink_R1.fastq "
                               ".temp/cut_out_nolink_R2.fastq "
                               "-M 220 -o .temp/flash_out 2>&1 |"
@@ -547,7 +547,7 @@ def splitSSR():
 # Removal of Redundancy
 def cdhit():
     print('CD-HIT working...')
-    micro_primers_system_call("software/cdhit/cd-hit-est "
+    micro_primers_system_call("cd-hit-est "
                               "-o .temp/cdhit_out.txt "
                               "-i .temp/split_out.fasta "
                               "-c 0.90 "
@@ -602,7 +602,8 @@ def size_check(SPECIAL_CASE):
 # Primer design and creation
 def primer3(p3_settings):
     print('Creating Primers...')
-    micro_primers_system_call("software/primer3/src/./primer3_core "
+    # software/primer3/src/./primer3_core
+    micro_primers_system_call("primer3_core "
                                    "-default_version=2 -p3_settings_file={} "
                                    ".temp/primer3_input_out.fasta "
                                    "-output=.temp/primer3_out.primers "

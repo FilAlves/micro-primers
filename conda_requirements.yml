@@ -1,15 +1,19 @@
 name: micro-primers
 channels:
+  - conda-forge
   - bioconda
+  - r
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
   - bz2file=0.98=py37_1
-  - ca-certificates=2020.10.14=0
+  - ca-certificates=2021.5.30=ha878542_0
   - cairo=1.14.12=h8948797_3
-  - certifi=2020.11.8=py37h06a4308_0
+  - cd-hit=4.6.8=hfc679d8_2
+  - certifi=2021.5.30=py37h89c1867_0
   - cutadapt=1.18=py37h14c3975_1
   - expat=2.2.10=he6710b0_2
+  - flash=1.2.11=hed695b0_5
   - fontconfig=2.13.0=h9420a91_0
   - freetype=2.10.4=h5ab3b9f_0
   - fribidi=1.0.10=h7b6447c_0
@@ -32,21 +36,26 @@ dependencies:
   - libxcb=1.14=h7b6447c_0
   - libxml2=2.9.10=hb55368b_3
   - ncurses=6.2=he6710b0_1
-  - openssl=1.1.1h=h7b6447c_0
+  - openjdk=10.0.2=h14c3975_1015
+  - openssl=1.1.1h=h516909a_0
   - pango=1.45.3=hd140c19_0
   - pcre=8.44=he6710b0_0
+  - perl=5.26.2=h36c2ea0_1008
   - pigz=2.4=h84994c4_0
   - pip=20.2.4=py37h06a4308_0
   - pixman=0.40.0=h7b6447c_0
+  - primer3=2.3.7=pl526hfc679d8_1
   - python=3.7.9=h7579374_0
+  - python_abi=3.7=2_cp37m
   - readline=8.0=h7b6447c_0
   - setuptools=50.3.1=py37h06a4308_1
   - six=1.15.0=py37h06a4308_0
   - sqlite=3.33.0=h62c20be_0
   - tk=8.6.10=hbc83047_0
+  - trimmomatic=0.36=6
   - wheel=0.35.1=pyhd3eb1b0_0
   - wxpython=4.0.4=py37hc99224d_0
   - xopen=0.7.3=py_0
   - xz=5.2.5=h7b6447c_0
   - zlib=1.2.11=h7b6447c_3
-prefix: /home/filalves/miniconda3/envs/micro-primers
+prefix: /home/falves/miniconda3/envs/micro-primers

@@ -683,6 +683,9 @@ class MyApp(wx.App):
 # Pipeline for terminal mode.
 def pipeline_terminal():
     folder([".temp/", "logs/"])
+
+    print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3_txt, primer3Filter)
+
     trimmomatic(r1, r2)
     cutadapt(cut3, cut5)
     flash()
@@ -695,7 +698,7 @@ def pipeline_terminal():
     ids_and_len()
     misa()
     length_merger()
-    good_micros(int(minFlank), int(minMotif), exclude.split(","))
+    good_micros(int(minFlank), int(minMotif), badSSR)
     splitSSR()
     cdhit()
     cluster()
@@ -718,8 +721,8 @@ if len(sys.argv) > 1:
     parser.add_argument("-o", "--output", metavar="", help="Output file name.")
     parser.add_argument("-exc", "--exclude", metavar="", default="c,c*,p1",
                         help="SSR types to be excluded from search.")
-    parser.add_argument("-enz", "--resenzime", metavar="", default="GATC",
-                        help="Restriction enzime pattern. Default: GATC.")
+    parser.add_argument("-enz", "--resenzime", metavar="", default="", nargs="?", const="GATC",
+                        help="Restriction enzime pattern. Default = No enzime pattern.")
     parser.add_argument("-spc", "--special", action="store_true", help="Activates special search. Default: False.")
     parser.add_argument("-p3f", "--p3filter", action="store_true", help="Filters primers designed inside SSR region. Default: False.")
     parser.add_argument("-p3", "--primer3", metavar="", default="primer3_setting.txt",
@@ -756,6 +759,8 @@ if len(sys.argv) > 1:
     primer3Filter = args.p3filter
     prefix = args.prefix
     out = args.output
+
+    badSSR = exclude.split(",")
 
     pipeline_terminal()
 

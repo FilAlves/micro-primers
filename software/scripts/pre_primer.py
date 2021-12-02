@@ -79,7 +79,8 @@ def transform(readfile, outfile, dic, primer3Filter):
 
         # ID
         if re.match("^SEQUENCE_ID", line):
-            id = line.split("=")[1]
+            # In case there are multiple "=" in the header (ex:SRA data)
+            id = "=".join(line.split("=")[1:])
             count = 0
 
         # DNA sequence

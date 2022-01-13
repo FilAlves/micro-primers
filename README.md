@@ -5,11 +5,7 @@ For any questions please send an email to filipealvesbio@gmail.com
 
 ## Requeriments:
 - Python3;
-- build-essencial;
-- perl;
-- cutadapt;
-- java;
-- zlib;
+- Conda (or Miniconda);
 
 ## Installation (linux)
 

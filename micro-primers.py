@@ -146,6 +146,10 @@ class TabAlleles(wx.Panel):
         self.specialToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
         self.specialToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggle)
 
+        tempFilesLabel = wx.StaticText(self, wx.ID_ANY, "Save temporary files: ")
+        self.tempFilesToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
+        self.tempFilesToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggleTempFiles)
+
         diffLabel = wx.StaticText(self, wx.ID_ANY, "Minimum distance between alelles (Special Search): ")
         self.diffText = wx.TextCtrl(self, wx.ID_ANY, value=minDiff, size=(220, 30))
 
@@ -159,6 +163,8 @@ class TabAlleles(wx.Panel):
         gridSizer.Add(self.motifText, pos=(3, 1))
         gridSizer.Add(specialLabel, pos=(4, 0))
         gridSizer.Add(self.specialToggle, pos=(4, 1))
+        gridSizer.Add(tempFilesLabel, pos=(5, 0))
+        gridSizer.Add(self.tempFilesToggle, pos=(5, 1))
 
         self.SetSizer(gridSizer)
         self.Layout()
@@ -168,6 +174,12 @@ class TabAlleles(wx.Panel):
             self.specialToggle.SetLabel("ON")
         else:
             self.specialToggle.SetLabel("OFF")
+
+    def onToggleTempFiles(self, event):
+        if self.tempFilesToggle.GetValue():
+            self.tempFilesToggle.SetLabel("ON")
+        else:
+            self.tempFilesToggle.SetLabel("OFF")
 
 
 class FrameSettings(wx.Frame):
@@ -194,20 +206,23 @@ class FrameSettings(wx.Frame):
         self.panel.SetSizer(sizer)
 
     def OnClose(self, event):
-        global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, primer3Filter
+        global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, tempFiles, primer3Filter
 
         cut3 = self.tabPreProcessing.cutText_3.GetValue()
         cut5 = self.tabPreProcessing.cutText_5.GetValue()
+        
         if self.tabPreProcessing.grepToggle.GetValue():
             grep = ""
-        exclude = self.tabPrimer.excludeText.GetValue()
-        primer3_txt = self.tabPrimer.primer3Text.GetValue()
+        
+        exclude       = self.tabPrimer.excludeText.GetValue()
+        primer3_txt   = self.tabPrimer.primer3Text.GetValue()
         primer3Filter = self.tabPrimer.filterToggle.GetValue()
-        minFlank = self.tabAllele.flankText.GetValue()
-        minMotif = self.tabAllele.motifText.GetValue()
-        minCnt = self.tabAllele.cntText.GetValue()
-        minDiff = self.tabAllele.diffText.GetValue()
-        special = self.tabAllele.specialToggle.GetValue()
+        minFlank  = self.tabAllele.flankText.GetValue()
+        minMotif  = self.tabAllele.motifText.GetValue()
+        minCnt    = self.tabAllele.cntText.GetValue()
+        minDiff   = self.tabAllele.diffText.GetValue()
+        special   = self.tabAllele.specialToggle.GetValue()
+        tempFiles = self.tabAllele.tempFilesToggle.GetValue()
 
         try:
             int(minFlank)
@@ -320,7 +335,7 @@ class MyFrame(wx.Frame):
         return True
 
     def run(self, event):
-        global r1, r2, cut3, cut5, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, prefix, badSSR, out, primer3Filter
+        global r1, r2, cut3, cut5, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, tempFiles, prefix, badSSR, out, primer3Filter
         self.running = True
         r1 = self.textR1.GetValue()
         r2 = self.textR2.GetValue()
@@ -336,7 +351,7 @@ class MyFrame(wx.Frame):
             badSSR = exclude.split(",")
             micro_primers_system_call("touch software/scripts/__init__.py", "Error: could not create init.py.")
 
-            print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3_txt, primer3Filter)
+            print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, tempFiles, minDiff, primer3_txt, primer3Filter)
 
             # Progress Bar
             self.progress = wx.ProgressDialog("Processing...", "Creating Folders...", maximum=18, parent=self,
@@ -431,7 +446,9 @@ class MyFrame(wx.Frame):
 
         wx.CallAfter(self.progress.Update, 17, newmsg='Removing temporary files...')
         self.step = 17
-        #junk()
+
+        if not tempFiles:
+            junk()
 
         wx.CallAfter(self.progress.Update, 18, newmsg='Done! You can close the window!')
         self.step = 18
@@ -633,6 +650,7 @@ def output(primer3Filter):
 
 # Removal of .temp directory
 def junk():
+    print('Deleting temporary files...')
     micro_primers_system_call("rm -r .temp/", "Error: could not remove .temp directory.")
 
 
@@ -684,7 +702,7 @@ class MyApp(wx.App):
 def pipeline_terminal():
     folder([".temp/", "logs/"])
 
-    print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, minDiff, primer3_txt, primer3Filter)
+    print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, tempFiles, minDiff, primer3_txt, primer3Filter)
 
     trimmomatic(r1, r2)
     cutadapt(cut3, cut5)
@@ -709,7 +727,10 @@ def pipeline_terminal():
     size_check(special)
     primer3(primer3_txt)
     output(primer3Filter)
-    junk()
+
+    if not tempFiles:
+        junk()
+    
     print('Done!')
 
 
@@ -718,7 +739,7 @@ if len(sys.argv) > 1:
         description='Pipeline for identification and design of PCR primers for amplification of SSR loci.')
     parser.add_argument("-r1", "--fastqr1", metavar="", help="Path to R1 input file.")
     parser.add_argument("-r2", "--fastqr2", metavar="", help="Path to R2 input file.")
-    parser.add_argument("-o", "--output", metavar="", help="Output file name.")
+    parser.add_argument("-o", "--output", default="", metavar="", help="Output file name.")
     parser.add_argument("-exc", "--exclude", metavar="", default="c,c*,p1",
                         help="SSR types to be excluded from search.")
     parser.add_argument("-enz", "--resenzime", metavar="", default="", nargs="?", const="GATC",
@@ -741,24 +762,27 @@ if len(sys.argv) > 1:
                         help="Minimum difference between the allele with higher number of repeats and the allele with a smaller number. Only used if special search is activated. Default: 8.")
     parser.add_argument("-p", "--prefix", metavar="", default="SSR",
                         help="Loci name on output file. Default: SSR.")
+    parser.add_argument("-t", "--tempfiles", action="store_true",
+                        help="Saves temporary files ('./temp' folder). Default: False.")                        
 
     args = parser.parse_args()
 
-    r1 = args.fastqr1
-    r2 = args.fastqr2
-    cut3 = args.cutadapt3
-    cut5 = args.cutadapt5
-    grep = args.resenzime
-    exclude = args.exclude
-    primer3_txt = args.primer3
-    minFlank = args.minflank
-    minMotif = args.minmotif
-    minCnt = args.mincount
-    minDiff = args.mindiff
-    special = args.special
+    r1            = args.fastqr1
+    r2            = args.fastqr2
+    cut3          = args.cutadapt3
+    cut5          = args.cutadapt5
+    grep          = args.resenzime
+    exclude       = args.exclude
+    primer3_txt   = args.primer3
+    minFlank      = args.minflank
+    minMotif      = args.minmotif
+    minCnt        = args.mincount
+    minDiff       = args.mindiff
+    special       = args.special
+    tempFiles     = args.tempfiles
     primer3Filter = args.p3filter
-    prefix = args.prefix
-    out = args.output
+    prefix        = args.prefix
+    out           = args.output
 
     badSSR = exclude.split(",")
 
@@ -776,6 +800,7 @@ else:
     minCnt = "5"
     minDiff = "8"
     special = False
+    tempFiles = False
     primer3Filter = False
     out = ""
 

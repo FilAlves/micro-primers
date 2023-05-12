@@ -479,7 +479,7 @@ def trimmomatic(R1, R2):
         "%s %s "
         ".temp/trim_out_trimmed_R1.fastq .temp/trim_out_unpaired_R1.fastq "
         ".temp/trim_out_trimmed_R2.fastq .temp/trim_out_unpaired_R2.fastq "
-        "ILLUMINACLIP:./software/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10 "
+        "ILLUMINACLIP:software/trim_adapters/TruSeq2-PE.fa:2:30:10 "
         "LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 2> logs/trim_log.txt"
         % (R1, R2),
         "Error: Trimmomatic could not remove adapters")

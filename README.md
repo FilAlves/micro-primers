@@ -58,6 +58,7 @@ The basic parameters required by Micro-Primers are set in the different tabs of 
 The “Settings” button contains three sections with different parameters to be considered for the pipeline execution: 
 
 ### Settings - Pre-Processing
+- **CutAdapt Toggle**      - Skips Cutadapt Filtering. 
     
 - **CutAdapt (3' and 5')** - adapters used after the restriction enzyme action and the pattern remaining in the sequence after the digestion. 
     
@@ -81,6 +82,8 @@ The “Settings” button contains three sections with different parameters to b
 
 - **Minimum motif repetition** - Minimum number of repetitions in a SSR.
 
+### Setings - Debug
+
 - **Special Search** - Toggle button to activate "Special Search".
 
 ## Terminal interface
@@ -94,8 +97,9 @@ The “Settings” button contains three sections with different parameters to b
     -spc, --special          Activates special search. Default: False.
     -p3f, --p3filter         Filters primers designed inside SSR region. Default: False.
     -p3 , --primer3          Path to primer3 settings file.
-    -c3 , --cutadapt3        Reverse adapter sequence (CutAdapt).
-    -c5 , --cutadapt5        Foward adapter sequence (CutAdapt).
+    -c3 , --cutadapt3        Reverse adapter sequence (CutAdapt). Default: CCAAGCTTCCCGGGTACCGC
+    -c5 , --cutadapt5        Foward adapter sequence (CutAdapt).  Default: GCGGTACCCGGGAAGCTTGG
+    --skip_cutadapat         Skips CutAdapt Filtering. Default: False.
     -flank , --minflank      Minimum length accepted in both flanking regions. Default: 50.
     -cnt , --mincount        Minimum number of alleles for a SSR loci. Default: 5.
     -motif , --minmotif      Minimum number of SSR motif repetitions. Default: 5.
@@ -103,6 +107,7 @@ The “Settings” button contains three sections with different parameters to b
                            number of repeats and the allele with a smaller
                            number. Only used if special search is activated. Default: 8.
     -p , --prefix            Loci name on output file. Default: SSR.
+    -temp, --tempfiles       Saves temporary files ('./temp' folder) for debugging purposes. Default: False.
 
 
 ![imagem](https://user-images.githubusercontent.com/38048444/73688787-af7d9a00-46c4-11ea-8192-49f8cf4f0f98.png)
@@ -112,4 +117,14 @@ The “Settings” button contains three sections with different parameters to b
 It has twelve columns, and each line  represents the primers designed by Primer3 for each SSR recovered from the multi- individual sample. From left to right, the first column, in red, is the unique name of each  cluster (ID) composed by a prefix (set by the user), the number of the loci and the primer pair number. Lines sharing the same loci number represent different primer pairs for the same SSR loci. The second column has the length (Size) of the sequence resultant from PCR amplification using the respective primer pairs. The third and fourth columns are the forward primer sequence and its melting temperature. The fifth and sixth columns refer to the equivalent information for the reverse primer. In the seventh column, the specific motif found is shown with the number of repeats present in the representative sequence. The column identified as ’Range’ shows the length span of the alleles detected for the same SSR. The nineth column contains the total number of alleles for the specific SSR loci. The tenth column indicates the potential number of alleles to be found in the population estimated from the difference between the longest and shortest alleles found. The eleventh column indicates the best combination of primer pairs for each loci (coded as “ | BEST | ”) as provided by Primer3 and the last column contain the representative sequence for the SSR loci from which the primers where designed.
 
 ![output](https://user-images.githubusercontent.com/38048444/146002543-344d79fb-28e2-459a-b10b-d2a8edc8da3a.png)
+
+# Common Issues
+
+- Micro_primers does not support single-end Fastq files!
+
+- Verify settings used before running micro-primers, specially cutadapt sequences and enzime restriction pattern (both these options can be disabled).
+
+- Primer3 input empty:
+   - Disable enzime restriction search if your sequences doesn't have them. If adapters are present, enable cutadapt filtering.
+   - Try using special search or modify your settings.
 

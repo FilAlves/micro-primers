@@ -29,38 +29,45 @@ class TabPreProcessing(wx.Panel):
 
         global cut3, cut5, grep
 
-        gridSizer = wx.GridBagSizer(hgap=2, vgap=5)
-        sizerCut_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizerCut_5 = wx.BoxSizer(wx.HORIZONTAL)
-        sizerGrep = wx.BoxSizer(wx.HORIZONTAL)
+        gridSizer = wx.GridBagSizer(hgap=2, vgap=6)
+        # sizerCutadaptText   = wx.BoxSizer(wx.HORIZONTAL)
+        # sizerCutadaptToggle = wx.BoxSizer(wx.HORIZONTAL)
+        # sizerCut_3          = wx.BoxSizer(wx.HORIZONTAL)
+        # sizerCut_5          = wx.BoxSizer(wx.HORIZONTAL)
+        # sizerGrep           = wx.BoxSizer(wx.HORIZONTAL)
 
-        cutLabel_3 = wx.StaticText(self, wx.ID_ANY, "CutAdapt 3' adapter sequence:")
-        self.cutText_3 = wx.TextCtrl(self, wx.ID_ANY, value=cut3, size=(220, 30))
+        cutadaptLabel       = wx.StaticText(self, wx.ID_ANY, "Cutadapt Filtering: ")
+        self.cutadaptToggle = wx.ToggleButton(self, wx.ID_ANY, label="ON")
+        self.cutadaptToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggleCutadapt)
 
-        cutLabel_5 = wx.StaticText(self, wx.ID_ANY, "CutAdapt 5' adapter sequence:")
-        self.cutText_5 = wx.TextCtrl(self, wx.ID_ANY, value=cut5, size=(220, 30))
+        cutLabel_3     = wx.StaticText(self, wx.ID_ANY, "CutAdapt 3' adapter sequence:")
+        self.cutText_3 = wx.TextCtrl(self, wx.ID_ANY, value=self.none_2_str(cut3), size=(220, 30))
 
-        grepLabel = wx.StaticText(self, wx.ID_ANY, "Restriction enzyme pattern:")
-        self.grepText = wx.TextCtrl(self, wx.ID_ANY, value=grep, size=(220, 30))
+        cutLabel_5     = wx.StaticText(self, wx.ID_ANY, "CutAdapt 5' adapter sequence:")
+        self.cutText_5 = wx.TextCtrl(self, wx.ID_ANY, value=self.none_2_str(cut5), size=(220, 30))
 
+        grepLabel       = wx.StaticText(self, wx.ID_ANY, "Restriction enzyme pattern:")
+        self.grepText   = wx.TextCtrl(self, wx.ID_ANY, value=grep, size=(220, 30))
         self.grepToggle = wx.ToggleButton(self, wx.ID_ANY, label="ON")
         self.grepToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggle1)
 
-        sizerCut_3.Add(cutLabel_3, wx.ALIGN_CENTER)
-        sizerCut_3.Add(self.cutText_3, wx.ALIGN_CENTER)
+        gridSizer.Add(cutadaptLabel, pos=(0, 0))
+        gridSizer.Add(self.cutadaptToggle, pos=(0, 1))
 
-        sizerCut_5.Add(cutLabel_5, wx.ALIGN_CENTER)
-        sizerCut_5.Add(self.cutText_5, wx.ALIGN_CENTER)
+        gridSizer.Add(cutLabel_3, pos=(1, 0))
+        gridSizer.Add(self.cutText_3, pos=(1, 1))
 
-        sizerGrep.Add(grepLabel, wx.ALIGN_CENTER)
-        sizerGrep.Add(self.grepText, wx.ALIGN_CENTER)
-        sizerGrep.Add(self.grepToggle)
+        gridSizer.Add(cutLabel_5, pos=(2, 0))
+        gridSizer.Add(self.cutText_5, pos=(2, 1))
 
-        gridSizer.Add(sizerCut_3, pos=(0, 0))
-        gridSizer.Add(sizerCut_5, pos=(1, 0))
-        gridSizer.Add(sizerGrep, pos=(2, 0))
+        gridSizer.Add(wx.StaticLine(self, wx.ID_ANY, style=wx.LI_HORIZONTAL, size=(0,15)) , pos=(3, 0))
+
+        gridSizer.Add(grepLabel , pos=(4, 0))
+        gridSizer.Add(self.grepText, pos=(4, 1))
+        gridSizer.Add(self.grepToggle, pos=(4, 2))
 
         self.SetSizer(gridSizer)
+        gridSizer.Fit(self)
         self.Layout()
 
     def onToggle1(self, event):
@@ -70,6 +77,23 @@ class TabPreProcessing(wx.Panel):
         else:
             self.grepToggle.SetLabel("ON")
             self.grepText.SetValue(grep)
+
+    def onToggleCutadapt(self, event):
+        if self.cutadaptToggle.GetValue():
+            self.cutadaptToggle.SetLabel("OFF")
+            self.cutText_3.SetValue("")
+            self.cutText_5.SetValue("")
+        else:
+            self.cutadaptToggle.SetLabel("ON")
+            self.cutText_3.SetValue("CCAAGCTTCCCGGGTACCGC")
+            self.cutText_5.SetValue("GCGGTACCCGGGAAGCTTGG")
+
+    def none_2_str(self, value):
+
+        if value:
+            return value
+        else:
+            return ""
 
 
 class TabPrimer(wx.Panel):
@@ -146,10 +170,6 @@ class TabAlleles(wx.Panel):
         self.specialToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
         self.specialToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggle)
 
-        tempFilesLabel = wx.StaticText(self, wx.ID_ANY, "Save temporary files: ")
-        self.tempFilesToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
-        self.tempFilesToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggleTempFiles)
-
         diffLabel = wx.StaticText(self, wx.ID_ANY, "Minimum distance between alelles (Special Search): ")
         self.diffText = wx.TextCtrl(self, wx.ID_ANY, value=minDiff, size=(220, 30))
 
@@ -163,8 +183,6 @@ class TabAlleles(wx.Panel):
         gridSizer.Add(self.motifText, pos=(3, 1))
         gridSizer.Add(specialLabel, pos=(4, 0))
         gridSizer.Add(self.specialToggle, pos=(4, 1))
-        gridSizer.Add(tempFilesLabel, pos=(5, 0))
-        gridSizer.Add(self.tempFilesToggle, pos=(5, 1))
 
         self.SetSizer(gridSizer)
         self.Layout()
@@ -174,6 +192,24 @@ class TabAlleles(wx.Panel):
             self.specialToggle.SetLabel("ON")
         else:
             self.specialToggle.SetLabel("OFF")
+
+
+class TabDebug(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        gridSizer = wx.GridBagSizer(hgap=3, vgap=2)
+
+        tempFilesLabel = wx.StaticText(self, wx.ID_ANY, "Save temporary files: ")
+        self.tempFilesToggle = wx.ToggleButton(self, wx.ID_ANY, label="OFF")
+        self.tempFilesToggle.Bind(wx.EVT_TOGGLEBUTTON, self.onToggleTempFiles)
+
+        gridSizer.Add(tempFilesLabel, pos=(0, 0))
+        gridSizer.Add(self.tempFilesToggle, pos=(0, 1))
+        
+        self.SetSizer(gridSizer)
+        self.Layout()
+
 
     def onToggleTempFiles(self, event):
         if self.tempFilesToggle.GetValue():
@@ -193,10 +229,12 @@ class FrameSettings(wx.Frame):
         self.tabPreProcessing = TabPreProcessing(nb)
         self.tabPrimer = TabPrimer(nb)
         self.tabAllele = TabAlleles(nb)
+        self.tabDebug  = TabDebug(nb)
 
         nb.AddPage(self.tabPreProcessing, "Pre-Processing")
         nb.AddPage(self.tabPrimer, "Primers")
         nb.AddPage(self.tabAllele, "Alleles")
+        nb.AddPage(self.tabDebug, "Debug")
 
         sizer = wx.BoxSizer()
         sizer.Add(nb, 1, wx.EXPAND)
@@ -208,21 +246,25 @@ class FrameSettings(wx.Frame):
     def OnClose(self, event):
         global cut3, cut5, grep, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, tempFiles, primer3Filter
 
-        cut3 = self.tabPreProcessing.cutText_3.GetValue()
-        cut5 = self.tabPreProcessing.cutText_5.GetValue()
+        if not self.tabPreProcessing.cutadaptToggle.GetValue():
+            cut3 = self.tabPreProcessing.cutText_3.GetValue()
+            cut5 = self.tabPreProcessing.cutText_5.GetValue()
+        else:
+            cut3 = None
+            cut5 = None
         
         if self.tabPreProcessing.grepToggle.GetValue():
-            grep = ""
-        
+            grep = None
+
         exclude       = self.tabPrimer.excludeText.GetValue()
         primer3_txt   = self.tabPrimer.primer3Text.GetValue()
         primer3Filter = self.tabPrimer.filterToggle.GetValue()
-        minFlank  = self.tabAllele.flankText.GetValue()
-        minMotif  = self.tabAllele.motifText.GetValue()
-        minCnt    = self.tabAllele.cntText.GetValue()
-        minDiff   = self.tabAllele.diffText.GetValue()
-        special   = self.tabAllele.specialToggle.GetValue()
-        tempFiles = self.tabAllele.tempFilesToggle.GetValue()
+        minFlank      = self.tabAllele.flankText.GetValue()
+        minMotif      = self.tabAllele.motifText.GetValue()
+        minCnt        = self.tabAllele.cntText.GetValue()
+        minDiff       = self.tabAllele.diffText.GetValue()
+        special       = self.tabAllele.specialToggle.GetValue()
+        tempFiles     = self.tabDebug.tempFilesToggle.GetValue()
 
         try:
             int(minFlank)
@@ -336,6 +378,7 @@ class MyFrame(wx.Frame):
 
     def run(self, event):
         global r1, r2, cut3, cut5, exclude, primer3_txt, minFlank, minMotif, minCnt, minDiff, special, tempFiles, prefix, badSSR, out, primer3Filter
+        
         self.running = True
         r1 = self.textR1.GetValue()
         r2 = self.textR2.GetValue()
@@ -377,22 +420,29 @@ class MyFrame(wx.Frame):
         self.step = 1
         trimmomatic(r1, r2)
 
-        wx.CallAfter(self.progress.Update, 2, newmsg='Cutadapt working...')
-        self.step = 2
-        cutadapt(cut3, cut5)
+        if cut3:
+            wx.CallAfter(self.progress.Update, 2, newmsg='Cutadapt working...')
+            self.step = 2
+            cutadapt(cut3, cut5)
+        
+        else:
+            wx.CallAfter(self.progress.Update, 2, newmsg='Skipping Cutadapt filtering...')
+            self.step = 2
+            cutadapt_skip()
 
         wx.CallAfter(self.progress.Update, 3, newmsg='Flash working...')
         self.step = 3
         flash()
 
-        if grep == "":
-            wx.CallAfter(self.progress.Update, 4, newmsg='Converting sequences from fastq to fasta...')
-            self.step = 4
-            fastq_to_fasta()
-        else:
+        if grep:
             wx.CallAfter(self.progress.Update, 4, newmsg='Selecting sequences with restriction enzyme pattern...')
             self.step = 4
             python_grep(grep)
+
+        else:
+            wx.CallAfter(self.progress.Update, 4, newmsg='Converting sequences from fastq to fasta...')
+            self.step = 4
+            fastq_to_fasta()
 
         wx.CallAfter(self.progress.Update, 5, newmsg='Adding ids and Calculating sequences lengths...')
         self.step = 5
@@ -434,27 +484,40 @@ class MyFrame(wx.Frame):
         wx.CallAfter(self.progress.Update, 14, newmsg='Creating Primer3 input file...')
         self.step = 14
         primer3_input()
-        size_check(special)
+        
+        # Continue if primer3 input is not empty
+        if not size_check(special):
 
-        wx.CallAfter(self.progress.Update, 15, newmsg='Creating Primers...')
-        self.step = 15
-        primer3(primer3_txt)
+            if not special:
+                wx.CallAfter(self.progress.Update, 18, newmsg='Primer3 input file is empty! Please check your settings or try using special search.')
+                self.step = 18
+                self.running = False
 
-        wx.CallAfter(self.progress.Update, 16, newmsg='Selecting best primers...')
-        self.step = 16
-        output(primer3Filter)
+            else:
+                wx.CallAfter(self.progress.Update, 18, newmsg='An error occurred while generating Primer3 input file! Please check your settings.')
+                self.step = 18
+                self.running = False
 
-        wx.CallAfter(self.progress.Update, 17, newmsg='Removing temporary files...')
-        self.step = 17
+        else:
+            wx.CallAfter(self.progress.Update, 15, newmsg='Creating Primers...')
+            self.step = 15
+            primer3(primer3_txt)
 
-        if not tempFiles:
-            junk()
+            wx.CallAfter(self.progress.Update, 16, newmsg='Selecting best primers...')
+            self.step = 16
+            output(primer3Filter)
 
-        wx.CallAfter(self.progress.Update, 18, newmsg='Done! You can close the window!')
-        self.step = 18
-        self.running = False
-        # self.progress.Destroy()
-        print('Done!')
+            wx.CallAfter(self.progress.Update, 17, newmsg='Removing temporary files...')
+            self.step = 17
+
+            if not tempFiles:
+                junk()
+
+            wx.CallAfter(self.progress.Update, 18, newmsg='Done! You can close the window!')
+            self.step = 18
+            self.running = False
+            # self.progress.Destroy()
+            print('Done!')
 
     def get_path(self, event, box):
         test_dir = wx.FileDialog(self, "Choose a directory:")
@@ -502,6 +565,15 @@ def cutadapt(a, g):
                               "> logs/cut_log_r2.txt"
                               % (a, g),
                               "Error: CutAdapt could not remove adapters from R2 sequence.")
+    
+def cutadapt_skip():
+    print('Skipping Cutadapt...')
+    micro_primers_system_call(
+        f"cp .temp/trim_out_trimmed_R1.fastq .temp/cut_out_nolink_R1.fastq", "Error: CutAdapt skip failed."
+    )
+    micro_primers_system_call(
+        f"cp .temp/trim_out_trimmed_R2.fastq .temp/cut_out_nolink_R2.fastq", "Error: CutAdapt skip failed."
+    )
 
 
 # Fusion of R1 and R2 files
@@ -513,7 +585,7 @@ def flash():
                               "-M 220 -o .temp/flash_out 2>&1 |"
                               " tee logs/flash.log "
                               "> logs/flash_log.txt",
-                              "Error: FLASH couldn0t merge sequences.")
+                              "Error: FLASH couldn't merge sequences.")
 
 
 # Selection of fragments that start and ends with the pattern of the restriction enzyme
@@ -608,12 +680,20 @@ def primer3_input():
 
 # Check if primer3 input is empty
 def size_check(SPECIAL_CASE):
+    
     if os.path.getsize(".temp/primer3_input_out.fasta") < 1:
         print("Empty primer3 input file. \n")
+
         if not SPECIAL_CASE:
-            sys.exit("No valid SSR's were selected. Try to use a broader search.")
-        elif SPECIAL_CASE:
-            sys.exit("No valid SSR's were selected.")
+            print('Primer3 input file is empty! Please check your settings or try using special search.')
+
+        else:
+            print('Primer3 input file is empty! Please check your settings.')
+        
+        return False
+    
+    else:
+        return True
 
 
 # Primer design and creation
@@ -669,7 +749,7 @@ class AboutFrame(wx.Frame):
         authorSizer = wx.BoxSizer(wx.VERTICAL)
 
         whatLabel = wx.StaticText(self, wx.ID_ANY, "Micro-Primers - Design primers for microsattelite amplification")
-        versionLabel = wx.StaticText(self, wx.ID_ANY, "Version: 1.0")
+        versionLabel = wx.StaticText(self, wx.ID_ANY, "Version: 1.3")
         author1Label = wx.StaticText(self, wx.ID_ANY, "Author(s):")
         author2Label = wx.StaticText(self, wx.ID_ANY, "Filipe Alves,  MSc")
         author3Label = wx.StaticText(self, wx.ID_ANY, "António Mérida Muñoz, PhD, CIBIO - inBIO")
@@ -705,13 +785,18 @@ def pipeline_terminal():
     print(r1, r2, cut3, cut5, grep, minFlank, minMotif, badSSR, minCnt, special, tempFiles, minDiff, primer3_txt, primer3Filter)
 
     trimmomatic(r1, r2)
-    cutadapt(cut3, cut5)
+
+    if cut3:
+        cutadapt(cut3, cut5)
+    else:
+        cutadapt_skip()
+
     flash()
 
-    if grep == "":
-        fastq_to_fasta()
-    else:
+    if grep:
         python_grep(grep)
+    else:
+        fastq_to_fasta()
 
     ids_and_len()
     misa()
@@ -724,9 +809,10 @@ def pipeline_terminal():
     cluster_filter(int(minCnt), special, int(minDiff))
     selected_micros()
     primer3_input()
-    size_check(special)
-    primer3(primer3_txt)
-    output(primer3Filter)
+    
+    if size_check(special):
+        primer3(primer3_txt)
+        output(primer3Filter)
 
     if not tempFiles:
         junk()
@@ -748,10 +834,11 @@ if len(sys.argv) > 1:
     parser.add_argument("-p3f", "--p3filter", action="store_true", help="Filters primers designed inside SSR region. Default: False.")
     parser.add_argument("-p3", "--primer3", metavar="", default="primer3_setting.txt",
                         help="Path to primer3 settings file.")
-    parser.add_argument("-c3", "--cutadapt3", metavar="", default="CCAAGCTTCCCGGGTACCGC",
-                        help="Reverse adapter sequence (CutAdapt).")
-    parser.add_argument("-c5", "--cutadapt5", metavar="", default="GCGGTACCCGGGAAGCTTGG",
-                        help="Foward adapter sequence (CutAdapt).")
+    parser.add_argument("--skip_cutadapt", action="store_true", help="Skips CutAdapt Filtering. Default: False.")
+    parser.add_argument("-c3", "--cutadapt3", metavar="", nargs="?", const="CCAAGCTTCCCGGGTACCGC", default="CCAAGCTTCCCGGGTACCGC", type=str,
+                        help="Reverse adapter sequence (CutAdapt). Default=CCAAGCTTCCCGGGTACCGC;")
+    parser.add_argument("-c5", "--cutadapt5", metavar="", nargs="?", const="GCGGTACCCGGGAAGCTTGG", default="GCGGTACCCGGGAAGCTTGG", type=str,
+                        help="Foward adapter sequence (CutAdapt). Default=GCGGTACCCGGGAAGCTTGG;")
     parser.add_argument("-flank", "--minflank", metavar="", default="50",
                         help="Minimum length accepted in both flanking regions. Default: 50.")
     parser.add_argument("-cnt", "--mincount", metavar="", default="5",
@@ -762,13 +849,14 @@ if len(sys.argv) > 1:
                         help="Minimum difference between the allele with higher number of repeats and the allele with a smaller number. Only used if special search is activated. Default: 8.")
     parser.add_argument("-p", "--prefix", metavar="", default="SSR",
                         help="Loci name on output file. Default: SSR.")
-    parser.add_argument("-t", "--tempfiles", action="store_true",
+    parser.add_argument("-temp", "--tempfiles", action="store_true",
                         help="Saves temporary files ('./temp' folder). Default: False.")                        
 
     args = parser.parse_args()
 
     r1            = args.fastqr1
     r2            = args.fastqr2
+    skip_cutadapt = args.skip_cutadapt
     cut3          = args.cutadapt3
     cut5          = args.cutadapt5
     grep          = args.resenzime
@@ -786,6 +874,12 @@ if len(sys.argv) > 1:
 
     badSSR = exclude.split(",")
 
+    print("CUT3:", cut3, "CUT5", cut5)
+    if skip_cutadapt:
+        cut3 = None
+        cut5 = None
+
+    
     pipeline_terminal()
 
 else:
